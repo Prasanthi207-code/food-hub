@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { StatCard, EmptyState } from "@/components/dashboard/SharedComponents";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -28,7 +28,7 @@ export default function BiogasDashboard() {
         <StatCard title="Total Supplies" value={partnerStats?.total ?? 0} icon={Package} color="purple" />
         <StatCard title="Processed" value={partnerStats?.processed ?? 0} icon={CheckCircle2} color="emerald" />
         <StatCard title="Scheduled" value={partnerStats?.scheduled ?? 0} icon={CalendarClock} color="blue" />
-        <StatCard title="Total Collected" value={`${partnerStats?.totalKg ?? 0} kg`} icon={Leaf} color="green" />
+        <StatCard title="Total Collected" value={`${partnerStats?.totalKg ?? 0} kg`} icon={Leaf} color="emerald" />
       </motion.div>
 
       <div className="grid lg:grid-cols-2 gap-6">
