@@ -1,6 +1,7 @@
-import { motion } from "framer-motion";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { Link } from "react-router";
 import { useAuth } from "@/hooks/use-auth";
+import { useRef } from "react";
 import {
   Leaf,
   ArrowRight,
@@ -13,54 +14,117 @@ import {
   BarChart3,
   MapPin,
   Bell,
-  ChevronRight,
-  Star,
   CheckCircle2,
   Sprout,
   Package,
   HandHelping,
+  Star,
+  ChevronRight,
+  ArrowDown,
+  Utensils,
 } from "lucide-react";
 
+/* ─── Animation helpers ─────────────────────────────────────── */
 const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 40 },
   visible: { opacity: 1, y: 0 },
 };
-
+const fadeIn = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+};
 const stagger = {
-  visible: { transition: { staggerChildren: 0.1 } },
+  visible: { transition: { staggerChildren: 0.12 } },
+};
+const scaleUp = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: { opacity: 1, scale: 1 },
+};
+
+function AnimatedSection({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+  return (
+    <motion.div
+      ref={ref}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"}
+      variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function CounterAnimation({ target, suffix = "" }: { target: number; suffix?: string }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
+  return (
+    <motion.span
+      ref={ref}
+      initial={{ opacity: 0 }}
+      animate={inView ? { opacity: 1 } : {}}
+    >
+      {inView ? (
+        <motion.span
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 1 }}
+        >
+          {target.toLocaleString()}{suffix}
+        </motion.span>
+      ) : "0"}
+    </motion.span>
+  );
+}
+
+/* ─── Food images from Unsplash ─────────────────────────────── */
+const foodImages = {
+  bread: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&h=400&fit=crop",
+  vegetables: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&h=400&fit=crop",
+  restaurant: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=400&fit=crop",
+  delivery: "https://images.unsplash.com/photo-1526367790999-0150786686a2?w=600&h=400&fit=crop",
+  community: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&h=400&fit=crop",
+  salad: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&h=400&fit=crop",
+  grocery: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&h=400&fit=crop",
+  cooking: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&h=400&fit=crop",
 };
 
 export default function Landing() {
   const { isAuthenticated } = useAuth();
+  const heroRef = useRef(null);
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
+  const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#FBF7F4]">
       {/* ─── Navigation ──────────────────────────────────────────── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-emerald-100">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#FBF7F4]/90 backdrop-blur-lg border-b border-[#E8E0D8]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600">
+            <Link to="/" className="flex items-center gap-2.5">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#00615F]">
                 <Leaf className="h-5 w-5 text-white" />
               </div>
-              <span className="text-lg font-bold text-emerald-900">FoodHub</span>
+              <span className="text-xl font-extrabold text-[#00615F] tracking-tight">FoodHub</span>
             </Link>
             <div className="hidden md:flex items-center gap-8">
-              <a href="#how-it-works" className="text-sm font-medium text-gray-600 hover:text-emerald-700 transition-colors">How It Works</a>
-              <a href="#mission" className="text-sm font-medium text-gray-600 hover:text-emerald-700 transition-colors">Our Mission</a>
-              <a href="#partners" className="text-sm font-medium text-gray-600 hover:text-emerald-700 transition-colors">Partners</a>
-              <a href="#impact" className="text-sm font-medium text-gray-600 hover:text-emerald-700 transition-colors">Impact</a>
+              <a href="#how-it-works" className="text-sm font-semibold text-gray-600 hover:text-[#00615F] transition-colors">How It Works</a>
+              <a href="#impact" className="text-sm font-semibold text-gray-600 hover:text-[#00615F] transition-colors">Impact</a>
+              <a href="#partners-section" className="text-sm font-semibold text-gray-600 hover:text-[#00615F] transition-colors">For Business</a>
+              <a href="#sustainability" className="text-sm font-semibold text-gray-600 hover:text-[#00615F] transition-colors">Sustainability</a>
             </div>
             <div className="flex items-center gap-3">
-              <Link to="/auth" className="text-sm font-medium text-emerald-700 hover:text-emerald-900 transition-colors px-3 py-2">
+              <Link to="/auth" className="text-sm font-semibold text-gray-600 hover:text-[#00615F] transition-colors px-3 py-2">
                 Sign In
               </Link>
               <Link
                 to="/auth?returnTo=/dashboard"
-                className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 transition-all duration-200"
+                className="inline-flex items-center gap-2 rounded-full bg-[#00615F] px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#00615F]/20 hover:bg-[#005550] transition-all duration-200 hover:shadow-[#00615F]/30"
               >
-                Get Started
-                <ArrowRight className="h-4 w-4" />
+                Donate Food
+                <Heart className="h-4 w-4" />
               </Link>
             </div>
           </div>
@@ -68,401 +132,459 @@ export default function Landing() {
       </nav>
 
       {/* ─── Hero ────────────────────────────────────────────────── */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
+      <section ref={heroRef} className="relative pt-28 pb-0 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[90vh] flex items-center">
+        <motion.div style={{ y: heroY, opacity: heroOpacity }} className="max-w-7xl mx-auto w-full">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.6 }}>
-              <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-4 py-1.5 mb-6">
-                <Sprout className="h-4 w-4 text-emerald-600" />
-                <span className="text-xs font-semibold text-emerald-700">Sustainable Food Management</span>
+            <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.7 }}>
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#E8F5E9] border border-[#C8E6C9] px-4 py-1.5 mb-6">
+                <Sprout className="h-4 w-4 text-[#00615F]" />
+                <span className="text-xs font-bold text-[#00615F] uppercase tracking-wider">Join the Food Waste Movement</span>
               </div>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight tracking-tight">
-                Turn Surplus Food Into{" "}
-                <span className="text-emerald-600">Meaningful Impact</span>
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-gray-900 leading-[1.05] tracking-tight">
+                Save food,{' '}
+                <span className="text-[#00615F]">save money</span>,{' '}
+                save the planet.
               </h1>
-              <p className="mt-6 text-lg text-gray-600 leading-relaxed max-w-xl">
-                FoodHub connects donors, businesses, collection teams, and waste-processing partners 
-                to redistribute surplus food, feed communities in need, and build a more sustainable future — all on one platform.
+              <p className="mt-6 text-lg text-gray-500 leading-relaxed max-w-xl">
+                Connect with donors, businesses, and collection teams to rescue surplus food before it goes to waste. Every meal saved is a step toward a better world.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
                 <Link
                   to="/auth?returnTo=/dashboard"
-                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-emerald-600/25 hover:bg-emerald-700 hover:shadow-emerald-600/40 transition-all duration-200"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#00615F] px-8 py-4 text-base font-bold text-white shadow-xl shadow-[#00615F]/25 hover:bg-[#005550] hover:shadow-[#00615F]/40 transition-all duration-300"
                 >
-                  Donate Food
-                  <Heart className="h-5 w-5" />
+                  Get Started — It's Free
+                  <ArrowRight className="h-5 w-5" />
                 </Link>
-                <Link
-                  to="/auth?returnTo=/dashboard"
-                  className="inline-flex items-center gap-2 rounded-xl border-2 border-emerald-200 bg-white px-6 py-3 text-base font-semibold text-emerald-700 hover:bg-emerald-50 transition-all duration-200"
+                <a
+                  href="#how-it-works"
+                  className="inline-flex items-center gap-2 rounded-full border-2 border-gray-200 bg-white px-8 py-4 text-base font-bold text-gray-700 hover:border-[#00615F] hover:text-[#00615F] transition-all duration-300"
                 >
-                  Partner With Us
-                  <HandHelping className="h-5 w-5" />
-                </Link>
-              </div>
-              <div className="mt-6 flex flex-wrap gap-6">
-                <a href="#how-it-works" className="text-sm text-gray-500 hover:text-emerald-600 transition-colors underline decoration-gray-300 underline-offset-2">
-                  Explore How It Works
+                  See How It Works
+                  <ArrowDown className="h-5 w-5" />
                 </a>
-                <Link to="/auth" className="text-sm text-gray-500 hover:text-emerald-600 transition-colors underline decoration-gray-300 underline-offset-2">
-                  Sign In to Your Account
-                </Link>
               </div>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
+              initial={{ opacity: 0, scale: 0.95, x: 30 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
               className="relative hidden lg:block"
             >
-              <div className="relative rounded-3xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 p-8 border border-emerald-200/50">
-                <div className="grid grid-cols-2 gap-4">
-                  {[
-                    { icon: Heart, label: "Donate Surplus", color: "bg-emerald-50 text-emerald-600", desc: "Share extra food" },
-                    { icon: Truck, label: "Collect & Deliver", color: "bg-emerald-50 text-emerald-600", desc: "Pick up & transport" },
-                    { icon: Users, label: "Feed Communities", color: "bg-emerald-50 text-emerald-600", desc: "Reach those in need" },
-                    { icon: Recycle, label: "Process Waste", color: "bg-emerald-50 text-emerald-600", desc: "Biogas & composting" },
-                  ].map((item, i) => (
-                    <motion.div
-                      key={item.label}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.4 + i * 0.1 }}
-                      className="rounded-2xl bg-white p-5 shadow-sm border border-gray-100"
-                    >
-                      <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${item.color}`}>
-                        <item.icon className="h-5 w-5" />
-                      </div>
-                      <p className="mt-3 text-sm font-bold text-gray-900">{item.label}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
-                    </motion.div>
-                  ))}
-                </div>
-                <div className="mt-4 rounded-2xl bg-white p-4 shadow-sm border border-gray-100">
+              <div className="relative">
+                <img
+                  src={foodImages.salad}
+                  alt="Fresh food ready for donation"
+                  className="rounded-[2rem] w-full h-[420px] object-cover shadow-2xl"
+                />
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 }}
+                  className="absolute -bottom-6 -left-6 bg-white rounded-2xl p-4 shadow-xl border border-gray-100"
+                >
                   <div className="flex items-center gap-3">
-                    <div className="flex -space-x-2">
-                      {["bg-emerald-600", "bg-emerald-500", "bg-emerald-400", "bg-emerald-700"].map((c, i) => (
-                        <div key={i} className={`h-8 w-8 rounded-full ${c} border-2 border-white flex items-center justify-center text-white text-xs font-bold`}>
-                          {["S", "M", "D", "A"][i]}
-                        </div>
-                      ))}
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#E8F5E9]">
+                      <Heart className="h-6 w-6 text-[#00615F]" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">2,847+ Active Members</p>
-                      <p className="text-xs text-gray-500">Across 12 cities and growing</p>
+                      <p className="text-2xl font-extrabold text-gray-900">12,480+</p>
+                      <p className="text-sm text-gray-500">Meals rescued this month</p>
                     </div>
                   </div>
-                </div>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1 }}
+                  className="absolute -top-4 -right-4 bg-white rounded-2xl p-4 shadow-xl border border-gray-100"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#E8F5E9]">
+                      <Recycle className="h-6 w-6 text-[#00615F]" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-extrabold text-[#00615F]">45 T</p>
+                      <p className="text-sm text-gray-500">Food rescued</p>
+                    </div>
+                  </div>
+                </motion.div>
               </div>
             </motion.div>
+          </div>
+        </motion.div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        >
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <ArrowDown className="h-6 w-6 text-gray-400" />
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* ─── Food rescue image strip ──────────────────────────────── */}
+      <section className="py-6 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-4 gap-3 rounded-3xl overflow-hidden">
+            {[foodImages.bread, foodImages.vegetables, foodImages.cooking, foodImages.grocery].map((img, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="relative h-32 sm:h-44 rounded-2xl overflow-hidden"
+              >
+                <img src={img} alt="" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ─── How It Works ────────────────────────────────────────── */}
-      <section id="how-it-works" className="py-20 bg-emerald-50/50">
+      <section id="how-it-works" className="py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-center mb-14">
-            <p className="text-sm font-semibold text-emerald-600 tracking-wide uppercase">Simple Process</p>
-            <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold text-gray-900">How FoodHub Works</h2>
-            <p className="mt-3 text-gray-600 max-w-2xl mx-auto">From surplus to service — a streamlined workflow that gets food where it matters most.</p>
-          </motion.div>
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid md:grid-cols-4 gap-8">
+          <AnimatedSection className="text-center mb-16">
+            <p className="text-sm font-bold text-[#00615F] tracking-widest uppercase">Simple & Effective</p>
+            <h2 className="mt-3 text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">How FoodHub works</h2>
+            <p className="mt-4 text-gray-500 max-w-2xl mx-auto text-lg">
+              From surplus to service — a streamlined workflow that gets food where it matters most.
+            </p>
+          </AnimatedSection>
+
+          <div className="grid md:grid-cols-3 gap-8">
             {[
-              { step: "1", icon: Package, title: "List Surplus Food", desc: "Donors and businesses list their surplus food with details — category, quantity, freshness, and pickup location." },
-              { step: "2", icon: Users, title: "Match & Assign", desc: "Collection agents receive nearby requests and accept the ones that fit their route and schedule." },
-              { step: "3", icon: Truck, title: "Pick Up & Deliver", desc: "Agents track the journey from pickup to delivery, with real-time status updates for every stakeholder." },
-              { step: "4", icon: Heart, title: "Feed & Impact", desc: "Food reaches communities in need. Analytics track meals served, waste diverted, and environmental impact." },
-            ].map((item) => (
-              <motion.div key={item.step} variants={fadeUp} className="relative">
-                <div className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow h-full">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-600 text-white text-sm font-bold mb-4">
-                    {item.step}
+              {
+                step: "01",
+                img: foodImages.restaurant,
+                title: "List surplus food",
+                desc: "Donors and businesses list their surplus with details — category, quantity, freshness, and pickup location.",
+              },
+              {
+                step: "02",
+                img: foodImages.delivery,
+                title: "Pick up & deliver",
+                desc: "Collection agents accept nearby requests and transport food to shelters, kitchens, and community centres.",
+              },
+              {
+                step: "03",
+                img: foodImages.community,
+                title: "Feed communities",
+                desc: "Food reaches people in need. Analytics track meals served, waste diverted, and environmental impact.",
+              },
+            ].map((item, i) => (
+              <AnimatedSection key={item.step}>
+                <div className="group rounded-3xl bg-white border border-gray-100 overflow-hidden hover:shadow-xl hover:shadow-[#00615F]/5 transition-all duration-500">
+                  <div className="relative h-52 overflow-hidden">
+                    <img
+                      src={item.img}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute top-4 left-4 bg-[#00615F] text-white text-sm font-extrabold rounded-xl px-3 py-1.5">
+                      {item.step}
+                    </div>
                   </div>
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 mb-3">
-                    <item.icon className="h-5 w-5" />
+                  <div className="p-6">
+                    <h3 className="text-xl font-extrabold text-gray-900 mb-2">{item.title}</h3>
+                    <p className="text-gray-500 leading-relaxed text-sm">{item.desc}</p>
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900">{item.title}</h3>
-                  <p className="mt-2 text-sm text-gray-500 leading-relaxed">{item.desc}</p>
                 </div>
-              </motion.div>
+              </AnimatedSection>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* ─── Mission ─────────────────────────────────────────────── */}
-      <section id="mission" className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* ─── Mission / Impact ─────────────────────────────────────── */}
+      <section id="impact" className="py-24 bg-[#00615F] relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-72 h-72 bg-white rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
-              <p className="text-sm font-semibold text-emerald-600 tracking-wide uppercase">Our Mission</p>
-              <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold text-gray-900">
-                Reducing Waste, One Donation at a Time
+            <AnimatedSection>
+              <p className="text-sm font-bold text-emerald-200 tracking-widest uppercase">Our Mission</p>
+              <h2 className="mt-3 text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+                Every meal rescued makes a difference.
               </h2>
-              <p className="mt-4 text-gray-600 leading-relaxed">
-                Nearly one-third of all food produced globally goes to waste while millions go hungry. 
-                FoodHub was built to close that gap — creating a transparent, efficient marketplace where 
-                surplus food moves from businesses and individuals to the people and organizations that can use it best.
-              </p>
-              <p className="mt-4 text-gray-600 leading-relaxed">
-                For food that genuinely cannot be consumed, we connect partners with verified waste-processing 
-                and biogas facilities, ensuring nothing goes to landfill if it can be turned into energy or compost instead.
+              <p className="mt-6 text-emerald-100 leading-relaxed text-lg">
+                Nearly one-third of all food produced globally goes to waste while millions go hungry.
+                FoodHub was built to close that gap — creating a transparent, efficient marketplace where
+                surplus food moves from businesses and individuals to the people who need it most.
               </p>
               <div className="mt-8 grid grid-cols-2 gap-4">
                 {[
-                  { icon: Shield, label: "Safety First", desc: "Every donation is verified through our food-safety framework" },
-                  { icon: BarChart3, label: "Full Transparency", desc: "Real-time tracking and analytics at every stage" },
-                  { icon: MapPin, label: "Local Impact", desc: "Connecting neighbors to reduce waste in their own communities" },
-                  { icon: Leaf, label: "Zero Waste Goal", desc: "Routing inedible food to composting and biogas partners" },
+                  { icon: Shield, label: "Safety First", desc: "Verified through our food-safety framework" },
+                  { icon: BarChart3, label: "Full Transparency", desc: "Real-time tracking at every stage" },
+                  { icon: MapPin, label: "Local Impact", desc: "Connecting neighbours in their communities" },
+                  { icon: Leaf, label: "Zero Waste Goal", desc: "Routing inedible food to biogas partners" },
                 ].map((item) => (
                   <div key={item.label} className="flex gap-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
-                      <item.icon className="h-4.5 w-4.5" />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/20">
+                      <item.icon className="h-5 w-5 text-emerald-200" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-gray-900">{item.label}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
+                      <p className="text-sm font-bold text-white">{item.label}</p>
+                      <p className="text-xs text-emerald-200 mt-0.5">{item.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
-            </motion.div>
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="relative">
-              <div className="rounded-3xl bg-gradient-to-br from-emerald-500 to-emerald-700 p-8 text-white">
-                <div className="grid grid-cols-2 gap-6">
-                  {[
-                    { value: "12K+", label: "Meals Delivered" },
-                    { value: "45T", label: "Food Rescued" },
-                    { value: "340+", label: "Business Partners" },
-                    { value: "28", label: "Cities Covered" },
-                  ].map((stat) => (
-                    <div key={stat.label} className="text-center">
-                      <p className="text-3xl font-extrabold">{stat.value}</p>
-                      <p className="text-sm text-emerald-100 mt-1">{stat.label}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-6 pt-6 border-t border-emerald-400/30 text-center">
-                  <p className="text-sm text-emerald-100 italic">"Save Food. Serve People. Sustain the Future."</p>
-                </div>
+            </AnimatedSection>
+
+            <AnimatedSection>
+              <div className="grid grid-cols-2 gap-6">
+                {[
+                  { value: "12,480", label: "Meals Delivered", icon: Heart },
+                  { value: "45.2 T", label: "Food Rescued", icon: Package },
+                  { value: "340+", label: "Business Partners", icon: Building2 },
+                  { value: "89%", label: "Success Rate", icon: CheckCircle2 },
+                ].map((stat, i) => (
+                  <motion.div
+                    key={stat.label}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/10"
+                  >
+                    <stat.icon className="h-8 w-8 text-emerald-200 mx-auto mb-3" />
+                    <p className="text-3xl font-extrabold text-white">{stat.value}</p>
+                    <p className="text-sm text-emerald-200 mt-1">{stat.label}</p>
+                  </motion.div>
+                ))}
               </div>
-            </motion.div>
+            </AnimatedSection>
           </div>
         </div>
       </section>
 
       {/* ─── Who We Connect ──────────────────────────────────────── */}
-      <section id="partners" className="py-20 bg-emerald-50/50">
+      <section id="partners-section" className="py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-center mb-14">
-            <p className="text-sm font-semibold text-emerald-600 tracking-wide uppercase">Our Network</p>
-            <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold text-gray-900">Who We Connect</h2>
-            <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
-              A complete ecosystem built around one goal: making sure surplus food reaches those who need it, 
-              and what can't be eaten is turned into energy or compost.
+          <AnimatedSection className="text-center mb-16">
+            <p className="text-sm font-bold text-[#00615F] tracking-widest uppercase">Our Network</p>
+            <h2 className="mt-3 text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">Who we connect</h2>
+            <p className="mt-4 text-gray-500 max-w-2xl mx-auto text-lg">
+              A complete ecosystem built around one goal: making sure surplus food reaches those who need it.
             </p>
-          </motion.div>
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { icon: Heart, title: "Food Donors", desc: "Individuals and households with surplus home-cooked food or groceries they'd like to share.", color: "bg-emerald-50 text-emerald-600 border-emerald-200" },
-              { icon: Building2, title: "Businesses", desc: "Restaurants, hotels, caterers, and bakeries managing end-of-day surplus and operational waste.", color: "bg-emerald-50 text-emerald-600 border-emerald-200" },
-              { icon: Truck, title: "Collection Agents", desc: "Trained employees who accept, pick up, and deliver donated food to shelters and community kitchens.", color: "bg-emerald-50 text-emerald-600 border-emerald-200" },
-              { icon: Recycle, title: "Waste-Processing Partners", desc: "Biogas plants, composting facilities, and recyclers handling food unsuitable for human consumption.", color: "bg-emerald-50 text-emerald-600 border-emerald-200" },
-            ].map((item) => (
-              <motion.div key={item.title} variants={fadeUp} className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${item.color} border`}>
-                  <item.icon className="h-6 w-6" />
-                </div>
-                <h3 className="mt-4 text-lg font-bold text-gray-900">{item.title}</h3>
-                <p className="mt-2 text-sm text-gray-500 leading-relaxed">{item.desc}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+          </AnimatedSection>
 
-      {/* ─── Impact Statistics ────────────────────────────────────── */}
-      <section id="impact" className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-center mb-14">
-            <p className="text-sm font-semibold text-emerald-600 tracking-wide uppercase">Platform Impact</p>
-            <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold text-gray-900">The Numbers Speak</h2>
-            <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
-              Every donation creates a ripple effect — meals served, waste diverted, communities strengthened.
-            </p>
-          </motion.div>
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { value: "12,480", label: "Meals Delivered", icon: Heart },
-              { value: "45.2 T", label: "Food Rescued", icon: Package },
-              { value: "340+", label: "Active Businesses", icon: Building2 },
-              { value: "89%", label: "Donation Success Rate", icon: CheckCircle2 },
-            ].map((item) => (
-              <motion.div key={item.label} variants={fadeUp} className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100 text-center hover:shadow-md transition-shadow">
-                <div className="flex h-12 w-12 mx-auto items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-                  <item.icon className="h-6 w-6" />
+              { icon: Heart, title: "Food Donors", desc: "Individuals sharing surplus home-cooked food or groceries.", img: foodImages.cooking },
+              { icon: Building2, title: "Businesses", desc: "Restaurants, hotels, and caterers managing end-of-day surplus.", img: foodImages.restaurant },
+              { icon: Truck, title: "Collection Agents", desc: "Trained employees who pick up and deliver donated food.", img: foodImages.delivery },
+              { icon: Recycle, title: "Waste-Processing Partners", desc: "Biogas plants and composters handling food unsuitable for eating.", img: foodImages.grocery },
+            ].map((item, i) => (
+              <AnimatedSection key={item.title}>
+                <div className="group rounded-3xl bg-white border border-gray-100 overflow-hidden hover:shadow-xl hover:shadow-[#00615F]/5 transition-all duration-500">
+                  <div className="relative h-40 overflow-hidden">
+                    <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                    <div className="absolute bottom-3 left-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 backdrop-blur-sm">
+                      <item.icon className="h-5 w-5 text-[#00615F]" />
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <h3 className="text-lg font-extrabold text-gray-900">{item.title}</h3>
+                    <p className="mt-1 text-sm text-gray-500 leading-relaxed">{item.desc}</p>
+                  </div>
                 </div>
-                <p className="mt-4 text-3xl font-extrabold text-gray-900">{item.value}</p>
-                <p className="mt-1 text-sm text-gray-500">{item.label}</p>
-              </motion.div>
+              </AnimatedSection>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* ─── Business Partnership ─────────────────────────────────── */}
-      <section className="py-20 bg-emerald-50/50">
+      <section className="py-24 bg-[#F5F0EB]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
-              <p className="text-sm font-semibold text-emerald-600 tracking-wide uppercase">For Businesses</p>
-              <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold text-gray-900">
-                Turn Surplus Into Social Impact
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <AnimatedSection className="order-2 lg:order-1">
+              <div className="rounded-3xl overflow-hidden shadow-2xl">
+                <img src={foodImages.restaurant} alt="Restaurant partner" className="w-full h-80 object-cover" />
+              </div>
+            </AnimatedSection>
+
+            <AnimatedSection className="order-1 lg:order-2">
+              <p className="text-sm font-bold text-[#00615F] tracking-widest uppercase">For Businesses</p>
+              <h2 className="mt-3 text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">
+                Turn surplus into social impact
               </h2>
-              <p className="mt-4 text-gray-600 leading-relaxed">
-                Hotels, restaurants, and food businesses can subscribe to FoodHub to donate surplus food 
-                efficiently, track their environmental impact, and build a verified reputation for sustainability. 
-                Our premium plans unlock advanced analytics, priority matching, and downloadable compliance reports.
+              <p className="mt-6 text-gray-500 leading-relaxed text-lg">
+                Hotels, restaurants, and food businesses can subscribe to FoodHub to donate surplus food
+                efficiently, track their environmental impact, and build a verified reputation for sustainability.
               </p>
-              <ul className="mt-6 space-y-3">
+              <ul className="mt-8 space-y-4">
                 {[
                   "Track total food donated, meals served, and waste diverted",
-                  "Receive a platform-calculated impact score based on verified activity",
-                  "Download monthly donation reports for compliance and PR",
-                  "Get priority matching with collection agents for faster pickups",
+                  "Receive a platform-calculated impact score",
+                  "Download monthly donation reports for compliance",
+                  "Get priority matching with collection agents",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">{item}</span>
+                    <CheckCircle2 className="h-5 w-5 text-[#00615F] shrink-0 mt-0.5" />
+                    <span className="text-gray-600">{item}</span>
                   </li>
                 ))}
               </ul>
               <Link
                 to="/auth?returnTo=/dashboard"
-                className="mt-8 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-emerald-600/25 hover:bg-emerald-700 transition-all"
+                className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#00615F] px-8 py-4 text-base font-bold text-white shadow-xl shadow-[#00615F]/20 hover:bg-[#005550] transition-all duration-300"
               >
                 Start as a Business Partner
                 <ArrowRight className="h-5 w-5" />
               </Link>
-            </motion.div>
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="rounded-3xl bg-white p-6 shadow-sm border border-gray-100">
-              <div className="flex items-center gap-3 mb-6">
-                <Star className="h-5 w-5 text-amber-400" />
-                <h3 className="font-bold text-gray-900">Subscription Plans</h3>
-              </div>
-              <div className="space-y-4">
-                {[
-                  { name: "Free", price: "$0/mo", features: ["Up to 5 donations/month", "Basic analytics", "Email notifications"] },
-                  { name: "Starter", price: "$29/mo", features: ["Unlimited donations", "Advanced analytics", "Priority matching", "Monthly reports"] },
-                  { name: "Professional", price: "$79/mo", features: ["All Starter features", "Dedicated account manager", "Custom branding", "API access"] },
-                ].map((plan) => (
-                  <div key={plan.name} className="rounded-xl border border-gray-200 p-4 hover:border-emerald-300 transition-colors">
-                    <div className="flex items-center justify-between">
-                      <p className="font-bold text-gray-900">{plan.name}</p>
-                      <p className="text-sm font-bold text-emerald-600">{plan.price}</p>
-                    </div>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {plan.features.map((f) => (
-                        <span key={f} className="rounded-full bg-emerald-50 text-emerald-700 px-2 py-0.5 text-xs font-medium">{f}</span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
+            </AnimatedSection>
           </div>
         </div>
       </section>
 
       {/* ─── Sustainability / Biogas ──────────────────────────────── */}
-      <section className="py-20">
+      <section id="sustainability" className="py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="order-2 lg:order-1 rounded-3xl bg-gradient-to-br from-emerald-600 to-emerald-800 p-8 text-white">
-              <Recycle className="h-10 w-10 text-emerald-200 mb-4" />
-              <h3 className="text-2xl font-extrabold">Waste-to-Energy Pipeline</h3>
-              <p className="mt-3 text-emerald-100 leading-relaxed">
-                Food unsuitable for human consumption is routed through our verified partner network — 
-                biogas plants, composting facilities, and animal-feed processors — ensuring nothing ends up 
-                in landfill if it can be turned into energy, soil, or feed instead.
-              </p>
-              <div className="mt-6 space-y-3">
-                {["Biogas energy production", "Industrial composting", "Animal feed processing", "Verified supply agreements"].map((item) => (
-                  <div key={item} className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-300" />
-                    <span className="text-sm text-emerald-100">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="order-1 lg:order-2">
-              <p className="text-sm font-semibold text-emerald-600 tracking-wide uppercase">Sustainability</p>
-              <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold text-gray-900">
-                Beyond the Table
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <AnimatedSection>
+              <p className="text-sm font-bold text-[#00615F] tracking-widest uppercase">Sustainability</p>
+              <h2 className="mt-3 text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">
+                Beyond the table
               </h2>
-              <p className="mt-4 text-gray-600 leading-relaxed">
-                Not every surplus item can be donated as food — and that's where our waste-processing 
-                partnerships come in. FoodHub classifies inedible food waste and connects it to verified 
+              <p className="mt-6 text-gray-500 leading-relaxed text-lg">
+                Not every surplus item can be donated as food — and that's where our waste-processing
+                partnerships come in. FoodHub classifies inedible food waste and connects it to verified
                 biogas and composting partners, creating closed-loop sustainability.
               </p>
-              <p className="mt-4 text-gray-600 leading-relaxed">
-                Partners create supply agreements specifying their capacity and accepted categories. 
-                The platform matches incoming waste with available capacity, schedules pickups, and 
+              <p className="mt-4 text-gray-500 leading-relaxed text-lg">
+                Partners create supply agreements specifying their capacity and accepted categories.
+                The platform matches incoming waste with available capacity, schedules pickups, and
                 tracks the full journey from collection to processing.
               </p>
               <Link
                 to="/auth?returnTo=/dashboard"
-                className="mt-8 inline-flex items-center gap-2 rounded-xl border-2 border-emerald-200 bg-white px-6 py-3 text-base font-semibold text-emerald-700 hover:bg-emerald-50 transition-all"
+                className="mt-8 inline-flex items-center gap-2 rounded-full border-2 border-[#00615F] bg-white px-8 py-4 text-base font-bold text-[#00615F] hover:bg-[#E8F5E9] transition-all duration-300"
               >
                 Become a Processing Partner
                 <Recycle className="h-5 w-5" />
               </Link>
-            </motion.div>
+            </AnimatedSection>
+
+            <AnimatedSection>
+              <div className="relative">
+                <img
+                  src={foodImages.vegetables}
+                  alt="Food waste processing"
+                  className="rounded-3xl w-full h-80 object-cover shadow-2xl"
+                />
+                <div className="absolute -bottom-6 -right-6 bg-white rounded-2xl p-5 shadow-xl border border-gray-100">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#E8F5E9]">
+                      <Recycle className="h-6 w-6 text-[#00615F]" />
+                    </div>
+                    <div>
+                      <p className="text-xl font-extrabold text-[#00615F]">3,200 kg</p>
+                      <p className="text-sm text-gray-500">Waste processed monthly</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </AnimatedSection>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Testimonials / Social Proof ──────────────────────────── */}
+      <section className="py-24 bg-[#F5F0EB]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AnimatedSection className="text-center mb-16">
+            <p className="text-sm font-bold text-[#00615F] tracking-widest uppercase">Trusted by many</p>
+            <h2 className="mt-3 text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">What our community says</h2>
+          </AnimatedSection>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { name: "Sarah Johnson", role: "Food Donor", text: "FoodHub made it so easy to share my surplus food. Knowing it reaches people who need it is incredibly rewarding.", img: foodImages.cooking },
+              { name: "Grand Hotel", role: "Business Partner", text: "We've reduced our food waste by 40% since joining FoodHub. The impact score helps us track our sustainability goals.", img: foodImages.restaurant },
+              { name: "David Kim", role: "Collection Agent", text: "The tracking system makes my routes efficient and I love seeing the real impact of each delivery I make.", img: foodImages.delivery },
+            ].map((t, i) => (
+              <AnimatedSection key={t.name}>
+                <div className="rounded-3xl bg-white border border-gray-100 p-6 hover:shadow-lg transition-shadow duration-300">
+                  <div className="flex items-center gap-1 mb-4">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star key={s} className="h-4 w-4 fill-[#00615F] text-[#00615F]" />
+                    ))}
+                  </div>
+                  <p className="text-gray-600 leading-relaxed mb-6">"{t.text}"</p>
+                  <div className="flex items-center gap-3">
+                    <img src={t.img} alt={t.name} className="h-10 w-10 rounded-full object-cover" />
+                    <div>
+                      <p className="text-sm font-bold text-gray-900">{t.name}</p>
+                      <p className="text-xs text-gray-500">{t.role}</p>
+                    </div>
+                  </div>
+                </div>
+              </AnimatedSection>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ─── Call to Action ───────────────────────────────────────── */}
-      <section className="py-20 bg-emerald-600">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-              Ready to Make a Difference?
+      <section className="py-24 bg-[#00615F] relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5">
+          <img src={foodImages.salad} alt="" className="w-full h-full object-cover" />
+        </div>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <AnimatedSection>
+            <h2 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+              Ready to make a difference?
             </h2>
-            <p className="mt-4 text-emerald-100 text-lg max-w-2xl mx-auto">
-              Join thousands of donors, businesses, and partners who are already using FoodHub 
+            <p className="mt-6 text-emerald-100 text-lg max-w-2xl mx-auto">
+              Join thousands of donors, businesses, and partners who are already using FoodHub
               to reduce waste, feed communities, and build a more sustainable food system.
             </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <div className="mt-10 flex flex-wrap justify-center gap-4">
               <Link
                 to="/auth?returnTo=/dashboard"
-                className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3.5 text-base font-bold text-emerald-700 shadow-lg hover:bg-emerald-50 transition-all"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-10 py-4 text-base font-bold text-[#00615F] shadow-xl hover:bg-emerald-50 transition-all duration-300"
               >
                 Get Started Free
                 <ArrowRight className="h-5 w-5" />
               </Link>
               <a
                 href="#how-it-works"
-                className="inline-flex items-center gap-2 rounded-xl border-2 border-emerald-400 px-8 py-3.5 text-base font-semibold text-white hover:bg-emerald-700 transition-all"
+                className="inline-flex items-center gap-2 rounded-full border-2 border-emerald-300 px-10 py-4 text-base font-bold text-white hover:bg-emerald-700 transition-all duration-300"
               >
                 Learn More
               </a>
             </div>
-          </motion.div>
+          </AnimatedSection>
         </div>
       </section>
 
       {/* ─── Footer ───────────────────────────────────────────────── */}
-      <footer className="bg-gray-900 text-gray-400 py-14">
+      <footer className="bg-gray-900 text-gray-400 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600">
-                  <Leaf className="h-4 w-4 text-white" />
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#00615F]">
+                  <Leaf className="h-4.5 w-4.5 text-white" />
                 </div>
-                <span className="text-lg font-bold text-white">FoodHub</span>
+                <span className="text-lg font-extrabold text-white">FoodHub</span>
               </div>
               <p className="text-sm leading-relaxed">
                 Connecting donors, businesses, and partners to reduce food waste and serve communities in need.
@@ -471,33 +593,33 @@ export default function Landing() {
             </div>
             <div>
               <h4 className="text-sm font-bold text-white mb-3">Platform</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#how-it-works" className="hover:text-emerald-400 transition-colors">How It Works</a></li>
-                <li><a href="#mission" className="hover:text-emerald-400 transition-colors">Our Mission</a></li>
-                <li><a href="#impact" className="hover:text-emerald-400 transition-colors">Impact</a></li>
-                <li><Link to="/auth" className="hover:text-emerald-400 transition-colors">Sign In</Link></li>
+              <ul className="space-y-2.5 text-sm">
+                <li><a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a></li>
+                <li><a href="#impact" className="hover:text-white transition-colors">Our Mission</a></li>
+                <li><a href="#impact" className="hover:text-white transition-colors">Impact</a></li>
+                <li><Link to="/auth" className="hover:text-white transition-colors">Sign In</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-sm font-bold text-white mb-3">Partners</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#partners" className="hover:text-emerald-400 transition-colors">For Businesses</a></li>
-                <li><a href="#partners" className="hover:text-emerald-400 transition-colors">For Donors</a></li>
-                <li><a href="#partners" className="hover:text-emerald-400 transition-colors">For Agents</a></li>
-                <li><a href="#partners" className="hover:text-emerald-400 transition-colors">Biogas Partners</a></li>
+              <ul className="space-y-2.5 text-sm">
+                <li><a href="#partners-section" className="hover:text-white transition-colors">For Businesses</a></li>
+                <li><a href="#partners-section" className="hover:text-white transition-colors">For Donors</a></li>
+                <li><a href="#partners-section" className="hover:text-white transition-colors">For Agents</a></li>
+                <li><a href="#sustainability" className="hover:text-white transition-colors">Biogas Partners</a></li>
               </ul>
             </div>
             <div>
               <h4 className="text-sm font-bold text-white mb-3">Connect</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-emerald-400 transition-colors">Contact Us</a></li>
-                <li><a href="#" className="hover:text-emerald-400 transition-colors">Support</a></li>
-                <li><a href="#" className="hover:text-emerald-400 transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-emerald-400 transition-colors">Terms of Service</a></li>
+              <ul className="space-y-2.5 text-sm">
+                <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Support</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
               </ul>
             </div>
           </div>
-          <div className="mt-10 pt-8 border-t border-gray-800 text-center text-xs text-gray-500">
+          <div className="mt-12 pt-8 border-t border-gray-800 text-center text-xs text-gray-500">
             © {new Date().getFullYear()} FoodHub. All rights reserved. Built for a more sustainable future.
           </div>
         </div>
