@@ -42,7 +42,7 @@ export default function AdminAnalytics() {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Total Donations" value={stats?.total ?? 0} icon={UtensilsCrossed} color="emerald" trend={{ value: "+23%", positive: true }} />
-        <StatCard title="Food Collected" value={`${stats?.totalKg ?? 0} kg`} icon={Leaf} color="green" />
+        <StatCard title="Food Collected" value={`${stats?.totalKg ?? 0} kg`} icon={Leaf} color="emerald" />
         <StatCard title="Active Users" value={allUsers?.length ?? 0} icon={Users} color="blue" />
         <StatCard title="Businesses" value={businesses?.length ?? 0} icon={Building2} color="amber" />
       </div>

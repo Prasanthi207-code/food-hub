@@ -51,7 +51,7 @@ export default function AdminDashboard() {
       <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Completed" value={stats?.completed ?? 0} icon={Activity} color="emerald" trend={{ value: "+18%", positive: true }} />
         <StatCard title="In Progress" value={stats?.inProgress ?? 0} icon={TrendingUp} color="blue" />
-        <StatCard title="Total Food" value={`${stats?.totalKg ?? 0} kg`} icon={Leaf} color="green" />
+        <StatCard title="Total Food" value={`${stats?.totalKg ?? 0} kg`} icon={Leaf} color="emerald" />
         <StatCard title="People Served" value={stats?.totalServed ?? 0} icon={Users} color="purple" />
       </motion.div>
 
