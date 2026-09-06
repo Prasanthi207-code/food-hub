@@ -119,10 +119,10 @@ export default function Landing() {
               <div className="relative rounded-3xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 p-8 border border-emerald-200/50">
                 <div className="grid grid-cols-2 gap-4">
                   {[
-                    { icon: Heart, label: "Donate Surplus", color: "bg-orange-50 text-orange-500", desc: "Share extra food" },
-                    { icon: Truck, label: "Collect & Deliver", color: "bg-blue-50 text-blue-500", desc: "Pick up & transport" },
+                    { icon: Heart, label: "Donate Surplus", color: "bg-emerald-50 text-emerald-600", desc: "Share extra food" },
+                    { icon: Truck, label: "Collect & Deliver", color: "bg-emerald-50 text-emerald-600", desc: "Pick up & transport" },
                     { icon: Users, label: "Feed Communities", color: "bg-emerald-50 text-emerald-600", desc: "Reach those in need" },
-                    { icon: Recycle, label: "Process Waste", color: "bg-purple-50 text-purple-500", desc: "Biogas & composting" },
+                    { icon: Recycle, label: "Process Waste", color: "bg-emerald-50 text-emerald-600", desc: "Biogas & composting" },
                   ].map((item, i) => (
                     <motion.div
                       key={item.label}
@@ -142,7 +142,7 @@ export default function Landing() {
                 <div className="mt-4 rounded-2xl bg-white p-4 shadow-sm border border-gray-100">
                   <div className="flex items-center gap-3">
                     <div className="flex -space-x-2">
-                      {["bg-emerald-500", "bg-orange-400", "bg-blue-500", "bg-purple-500"].map((c, i) => (
+                      {["bg-emerald-600", "bg-emerald-500", "bg-emerald-400", "bg-emerald-700"].map((c, i) => (
                         <div key={i} className={`h-8 w-8 rounded-full ${c} border-2 border-white flex items-center justify-center text-white text-xs font-bold`}>
                           {["S", "M", "D", "A"][i]}
                         </div>
@@ -266,10 +266,10 @@ export default function Landing() {
           </motion.div>
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: Heart, title: "Food Donors", desc: "Individuals and households with surplus home-cooked food or groceries they'd like to share.", color: "bg-orange-50 text-orange-500 border-orange-200" },
-              { icon: Building2, title: "Businesses", desc: "Restaurants, hotels, caterers, and bakeries managing end-of-day surplus and operational waste.", color: "bg-amber-50 text-amber-600 border-amber-200" },
-              { icon: Truck, title: "Collection Agents", desc: "Trained employees who accept, pick up, and deliver donated food to shelters and community kitchens.", color: "bg-blue-50 text-blue-500 border-blue-200" },
-              { icon: Recycle, title: "Waste-Processing Partners", desc: "Biogas plants, composting facilities, and recyclers handling food unsuitable for human consumption.", color: "bg-purple-50 text-purple-500 border-purple-200" },
+              { icon: Heart, title: "Food Donors", desc: "Individuals and households with surplus home-cooked food or groceries they'd like to share.", color: "bg-emerald-50 text-emerald-600 border-emerald-200" },
+              { icon: Building2, title: "Businesses", desc: "Restaurants, hotels, caterers, and bakeries managing end-of-day surplus and operational waste.", color: "bg-emerald-50 text-emerald-600 border-emerald-200" },
+              { icon: Truck, title: "Collection Agents", desc: "Trained employees who accept, pick up, and deliver donated food to shelters and community kitchens.", color: "bg-emerald-50 text-emerald-600 border-emerald-200" },
+              { icon: Recycle, title: "Waste-Processing Partners", desc: "Biogas plants, composting facilities, and recyclers handling food unsuitable for human consumption.", color: "bg-emerald-50 text-emerald-600 border-emerald-200" },
             ].map((item) => (
               <motion.div key={item.title} variants={fadeUp} className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                 <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${item.color} border`}>
@@ -379,11 +379,10 @@ export default function Landing() {
       {/* ─── Sustainability / Biogas ──────────────────────────────── */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="order-2 lg:order-1 rounded-3xl bg-gradient-to-br from-purple-500 to-purple-700 p-8 text-white">
-              <Recycle className="h-10 w-10 text-purple-200 mb-4" />
+          <div className="grid lg:grid-cols-2 gap-12 items-center">              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="order-2 lg:order-1 rounded-3xl bg-gradient-to-br from-emerald-600 to-emerald-800 p-8 text-white">
+              <Recycle className="h-10 w-10 text-emerald-200 mb-4" />
               <h3 className="text-2xl font-extrabold">Waste-to-Energy Pipeline</h3>
-              <p className="mt-3 text-purple-100 leading-relaxed">
+              <p className="mt-3 text-emerald-100 leading-relaxed">
                 Food unsuitable for human consumption is routed through our verified partner network — 
                 biogas plants, composting facilities, and animal-feed processors — ensuring nothing ends up 
                 in landfill if it can be turned into energy, soil, or feed instead.
@@ -391,14 +390,14 @@ export default function Landing() {
               <div className="mt-6 space-y-3">
                 {["Biogas energy production", "Industrial composting", "Animal feed processing", "Verified supply agreements"].map((item) => (
                   <div key={item} className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-purple-300" />
-                    <span className="text-sm text-purple-100">{item}</span>
+                    <CheckCircle2 className="h-4 w-4 text-emerald-300" />
+                    <span className="text-sm text-emerald-100">{item}</span>
                   </div>
                 ))}
               </div>
             </motion.div>
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="order-1 lg:order-2">
-              <p className="text-sm font-semibold text-purple-600 tracking-wide uppercase">Sustainability</p>
+              <p className="text-sm font-semibold text-emerald-600 tracking-wide uppercase">Sustainability</p>
               <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold text-gray-900">
                 Beyond the Table
               </h2>
@@ -414,7 +413,7 @@ export default function Landing() {
               </p>
               <Link
                 to="/auth?returnTo=/dashboard"
-                className="mt-8 inline-flex items-center gap-2 rounded-xl border-2 border-purple-200 bg-white px-6 py-3 text-base font-semibold text-purple-700 hover:bg-purple-50 transition-all"
+                className="mt-8 inline-flex items-center gap-2 rounded-xl border-2 border-emerald-200 bg-white px-6 py-3 text-base font-semibold text-emerald-700 hover:bg-emerald-50 transition-all"
               >
                 Become a Processing Partner
                 <Recycle className="h-5 w-5" />

@@ -42,10 +42,10 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/* CHANGE VALUES FOR THEME */
+/* White + Emerald theme */
 :root {
   --radius: 0.625rem;
-  --background: oklch(0.99 0.005 155);
+  --background: oklch(1 0 0);
   --foreground: oklch(0.18 0.01 160);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.18 0.01 160);
@@ -53,21 +53,21 @@
   --popover-foreground: oklch(0.18 0.01 160);
   --primary: oklch(0.33 0.12 160);
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.95 0.02 155);
+  --secondary: oklch(0.96 0.02 155);
   --secondary-foreground: oklch(0.25 0.08 160);
-  --muted: oklch(0.96 0.01 155);
+  --muted: oklch(0.97 0.01 155);
   --muted-foreground: oklch(0.48 0.03 160);
-  --accent: oklch(0.95 0.02 155);
+  --accent: oklch(0.96 0.02 155);
   --accent-foreground: oklch(0.25 0.08 160);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.90 0.015 155);
-  --input: oklch(0.90 0.015 155);
+  --border: oklch(0.92 0.01 155);
+  --input: oklch(0.92 0.01 155);
   --ring: oklch(0.33 0.12 160);
   --chart-1: oklch(0.33 0.12 160);
   --chart-2: oklch(0.50 0.14 155);
-  --chart-3: oklch(0.72 0.15 80);
-  --chart-4: oklch(0.45 0.10 200);
-  --chart-5: oklch(0.60 0.12 140);
+  --chart-3: oklch(0.65 0.12 155);
+  --chart-4: oklch(0.42 0.10 160);
+  --chart-5: oklch(0.75 0.10 155);
   --sidebar: oklch(0.20 0.08 160);
   --sidebar-foreground: oklch(0.95 0.01 155);
   --sidebar-primary: oklch(0.50 0.14 155);
@@ -76,47 +76,6 @@
   --sidebar-accent-foreground: oklch(0.95 0.01 155);
   --sidebar-border: oklch(0.28 0.06 160);
   --sidebar-ring: oklch(0.50 0.14 155);
-}
-
-/* Food Waste Management custom colors */
-:root {
-  --color-emerald-50: oklch(0.97 0.02 155);
-  --color-emerald-100: oklch(0.93 0.04 155);
-  --color-emerald-200: oklch(0.87 0.06 155);
-  --color-emerald-500: oklch(0.59 0.14 155);
-  --color-emerald-600: oklch(0.50 0.14 155);
-  --color-emerald-700: oklch(0.42 0.12 160);
-  --color-emerald-800: oklch(0.33 0.12 160);
-  --color-emerald-900: oklch(0.25 0.08 160);
-  --color-orange-50: oklch(0.97 0.02 70);
-  --color-orange-100: oklch(0.93 0.04 70);
-  --color-orange-400: oklch(0.75 0.15 65);
-  --color-orange-500: oklch(0.68 0.17 60);
-  --color-orange-600: oklch(0.60 0.16 55);
-}
-
-/* Green-themed utility classes */
-@layer utilities {
-  .bg-green-50 { background-color: var(--color-emerald-50); }
-  .bg-green-100 { background-color: var(--color-emerald-100); }
-  .bg-green-200 { background-color: var(--color-emerald-200); }
-  .bg-green-500 { background-color: var(--color-emerald-500); }
-  .bg-green-600 { background-color: var(--color-emerald-600); }
-  .bg-green-700 { background-color: var(--color-emerald-700); }
-  .bg-green-800 { background-color: var(--color-emerald-800); }
-  .bg-green-900 { background-color: var(--color-emerald-900); }
-  .bg-orange-50 { background-color: var(--color-orange-50); }
-  .bg-orange-100 { background-color: var(--color-orange-100); }
-  .bg-orange-400 { background-color: var(--color-orange-400); }
-  .bg-orange-500 { background-color: var(--color-orange-500); }
-  .bg-orange-600 { background-color: var(--color-orange-600); }
-  .text-green-700 { color: var(--color-emerald-700); }
-  .text-green-800 { color: var(--color-emerald-800); }
-  .text-green-900 { color: var(--color-emerald-900); }
-  .text-orange-500 { color: var(--color-orange-500); }
-  .text-orange-600 { color: var(--color-orange-600); }
-  .border-green-200 { border-color: var(--color-emerald-200); }
-  .border-green-500 { border-color: var(--color-emerald-500); }
 }
 
 .dark {

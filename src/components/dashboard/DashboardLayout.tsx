@@ -97,11 +97,11 @@ const roleLabels: Record<UserRole, string> = {
 };
 
 const roleColors: Record<UserRole, string> = {
-  user: "bg-emerald-100 text-emerald-800",
-  employee: "bg-blue-100 text-blue-800",
-  business: "bg-amber-100 text-amber-800",
-  admin: "bg-purple-100 text-purple-800",
-  biogas: "bg-green-100 text-green-800",
+  user: "bg-emerald-50 text-emerald-700",
+  employee: "bg-emerald-50 text-emerald-700",
+  business: "bg-emerald-50 text-emerald-700",
+  admin: "bg-emerald-100 text-emerald-800",
+  biogas: "bg-emerald-50 text-emerald-700",
 };
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
