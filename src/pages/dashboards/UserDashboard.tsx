@@ -1,120 +1,113 @@
-import { useAuth } from "@/hooks/use-auth";
-import { StatCard, StatusBadge } from "@/components/dashboard/SharedComponents";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, UtensilsCrossed, Clock, CheckCircle2, TrendingUp, Users, ArrowRight } from "lucide-react";
-import { Link } from "react-router";
+import { motion } from "framer-motion";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { motion } from "framer-motion";
+import { useAuth } from "@/hooks/use-auth";
+import { StatCard, StatusBadge, EmptyState, foodImages } from "@/components/dashboard/SharedComponents";
+import { Heart, UtensilsCrossed, Clock, CheckCircle2, TrendingUp, Plus, MapPin, Package } from "lucide-react";
+import { Link } from "react-router";
 
 const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
+const stagger = { visible: { transition: { staggerChildren: 0.06 } } };
 
 export default function UserDashboard() {
   const { user } = useAuth();
+  const donations = useQuery(api.mutations.donations.listByDonor, user?._id ? { donorId: user._id } : "skip");
   const stats = useQuery(api.mutations.donations.getStats);
-  const recentDonations = useQuery(api.mutations.donations.getRecent, { limit: 5 });
+
+  const myDonations = donations || [];
+  const completed = myDonations.filter((d) => d.status === "completed").length;
+  const pending = myDonations.filter((d) => d.status === "pending").length;
+  const totalKg = myDonations.reduce((a, d) => a + d.quantityKg, 0);
+  const totalServed = myDonations.reduce((a, d) => a + d.servesPeople, 0);
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.06 } } }} className="space-y-6">
-      {/* Welcome */}
-      <motion.div variants={fadeUp}>
-        <h1 className="text-2xl font-extrabold text-gray-900">
-          Welcome back{user?.name ? `, ${user.name.split(" ")[0]}` : ""}
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">Here's an overview of your donations and impact on FoodHub.</p>
+    <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-8">
+      {/* Hero banner */}
+      <motion.div variants={fadeUp} className="relative rounded-3xl overflow-hidden h-48 sm:h-56">
+        <img src={foodImages.community} alt="Community receiving food" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#00615F]/90 to-[#00615F]/60" />
+        <div className="absolute inset-0 flex items-center px-8">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+              Welcome back, {user?.name?.split(" ")[0] || "Donor"} 👋
+            </h1>
+            <p className="text-emerald-100 mt-1">Every donation makes a difference. Keep up the great work!</p>
+            <Link to="/dashboard/create-donation" className="mt-3 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-bold text-[#00615F] hover:bg-emerald-50 transition-colors">
+              <Plus className="h-4 w-4" /> New Donation
+            </Link>
+          </div>
+        </div>
       </motion.div>
 
       {/* Stats */}
       <motion.div variants={fadeUp} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Total Donations" value={stats?.total ?? "—"} icon={UtensilsCrossed} color="emerald" />
-        <StatCard title="Completed" value={stats?.completed ?? "—"} icon={CheckCircle2} color="emerald" trend={{ value: "+12%", positive: true }} />
-        <StatCard title="In Progress" value={stats?.inProgress ?? "—"} icon={Clock} color="blue" />
-        <StatCard title="People Served" value={stats?.totalServed ?? "—"} icon={Users} color="orange" />
+        <StatCard title="My Donations" value={myDonations.length} icon={Heart} color="emerald" trend={{ value: "+3 this week", positive: true }} />
+        <StatCard title="Completed" value={completed} icon={CheckCircle2} color="emerald" />
+        <StatCard title="Pending" value={pending} icon={Clock} color="amber" />
+        <StatCard title="People Served" value={totalServed} icon={UtensilsCrossed} color="emerald" />
       </motion.div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Recent Donations */}
-        <motion.div variants={fadeUp} className="lg:col-span-2">
-          <Card className="border-gray-200 shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-base font-bold text-gray-900">Recent Donations</CardTitle>
-              <Link to="/dashboard/donations" className="text-sm font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1">
-                View All <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </CardHeader>
-            <CardContent>
-              {(!recentDonations || recentDonations.length === 0) ? (
-                <p className="text-sm text-gray-500 py-8 text-center">No donations yet. Create your first donation to get started!</p>
-              ) : (
-                <div className="space-y-3">
-                  {recentDonations.map((d) => (
-                    <div key={d._id} className="flex items-center justify-between rounded-xl border border-gray-100 p-3.5 hover:bg-gray-50 transition-colors">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
-                          <UtensilsCrossed className="h-4.5 w-4.5" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-semibold text-gray-900 truncate">{d.foodName}</p>
-                          <p className="text-xs text-gray-500">{d.quantity} · {d.quantityKg} kg</p>
-                        </div>
-                      </div>
-                      <StatusBadge status={d.status} />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
+      {/* Food impact card */}
+      <motion.div variants={fadeUp} className="rounded-3xl overflow-hidden">
+        <div className="grid md:grid-cols-2 gap-0">
+          <div className="relative h-48 md:h-auto">
+            <img src={foodImages.salad} alt="Food saved from waste" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#00615F]/80 to-transparent" />
+            <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-xl px-4 py-2">
+              <p className="text-2xl font-extrabold text-[#00615F]">{totalKg.toFixed(1)} kg</p>
+              <p className="text-xs text-gray-500">Total food rescued</p>
+            </div>
+          </div>
+          <div className="bg-[#00615F] p-6 flex flex-col justify-center">
+            <h3 className="text-xl font-extrabold text-white">Your Impact So Far</h3>
+            <p className="text-emerald-100 mt-2 text-sm leading-relaxed">
+              Through your {myDonations.length} donations, you've helped serve {totalServed} people and rescue {totalKg.toFixed(1)} kg of food from going to waste.
+            </p>
+            <div className="mt-4 flex gap-4">
+              <div className="text-center">
+                <p className="text-2xl font-extrabold text-white">{completed}</p>
+                <p className="text-xs text-emerald-200">Delivered</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-extrabold text-white">{pending}</p>
+                <p className="text-xs text-emerald-200">Awaiting Pickup</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
 
-        {/* Quick Actions */}
-        <motion.div variants={fadeUp}>
-          <Card className="border-gray-200 shadow-sm">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-bold text-gray-900">Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Link to="/dashboard/create-donation" className="flex items-center gap-3 rounded-xl border border-gray-100 p-3.5 hover:bg-emerald-50 hover:border-emerald-200 transition-all group">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-50 text-orange-500 group-hover:bg-orange-100">
-                  <Heart className="h-5 w-5" />
+      {/* Recent donations */}
+      <motion.div variants={fadeUp}>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-extrabold text-gray-900">Recent Donations</h2>
+          <Link to="/dashboard/donations" className="text-sm font-bold text-[#00615F] hover:underline">View All →</Link>
+        </div>
+        {myDonations.length === 0 ? (
+          <EmptyState icon={Heart} title="No donations yet" description="Create your first food donation to start making an impact." />
+        ) : (
+          <div className="space-y-3">
+            {myDonations.slice(0, 5).map((d, i) => (
+              <motion.div
+                key={d._id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="flex items-center gap-4 rounded-2xl bg-white border border-gray-100 p-4 hover:shadow-md hover:shadow-[#00615F]/5 transition-all duration-300"
+              >
+                <div className="h-12 w-12 rounded-xl overflow-hidden shrink-0">
+                  <img src={foodImages[d.foodCategory === "bakery" ? "bread" : d.foodCategory === "produce" ? "vegetables" : "cooking"]} alt="" className="w-full h-full object-cover" />
                 </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">Donate Food</p>
-                  <p className="text-xs text-gray-500">Share surplus food</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-gray-900 truncate">{d.foodName}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{d.quantityKg} kg · {d.servesPeople} people · {new Date(d.createdAt).toLocaleDateString()}</p>
                 </div>
-              </Link>
-              <Link to="/dashboard/tracking" className="flex items-center gap-3 rounded-xl border border-gray-100 p-3.5 hover:bg-emerald-50 hover:border-emerald-200 transition-all group">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-500 group-hover:bg-blue-100">
-                  <TrendingUp className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">Track Donations</p>
-                  <p className="text-xs text-gray-500">See delivery status</p>
-                </div>
-              </Link>
-              <Link to="/dashboard/notifications" className="flex items-center gap-3 rounded-xl border border-gray-100 p-3.5 hover:bg-emerald-50 hover:border-emerald-200 transition-all group">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-50 text-purple-500 group-hover:bg-purple-100">
-                  <Clock className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">Notifications</p>
-                  <p className="text-xs text-gray-500">3 unread alerts</p>
-                </div>
-              </Link>
-            </CardContent>
-          </Card>
-
-          {/* Impact Summary */}
-          <Card className="border-gray-200 shadow-sm mt-4 bg-gradient-to-br from-emerald-500 to-emerald-700 text-white">
-            <CardContent className="p-5">
-              <p className="text-sm font-semibold text-emerald-100">Your Impact</p>
-              <p className="text-3xl font-extrabold mt-1">{stats?.totalKg ?? 0} kg</p>
-              <p className="text-sm text-emerald-100 mt-0.5">food rescued through FoodHub</p>
-              <p className="text-xs text-emerald-200 mt-3">Every donation helps reduce waste and feed communities in need.</p>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
+                <StatusBadge status={d.status} />
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </motion.div>
     </motion.div>
   );
 }

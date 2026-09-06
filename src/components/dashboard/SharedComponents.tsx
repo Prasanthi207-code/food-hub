@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface StatCardProps {
   title: string;
@@ -11,47 +12,43 @@ interface StatCardProps {
   color?: "emerald" | "orange" | "blue" | "purple" | "amber";
 }
 
-const colorMap = {
-  emerald: "bg-emerald-50 text-emerald-600 border-emerald-200",
-  orange: "bg-orange-50 text-orange-600 border-orange-200",
-  blue: "bg-blue-50 text-blue-600 border-blue-200",
-  purple: "bg-purple-50 text-purple-600 border-purple-200",
-  amber: "bg-amber-50 text-amber-600 border-amber-200",
-};
-
 const iconBgMap = {
-  emerald: "bg-emerald-100 text-emerald-600",
-  orange: "bg-orange-100 text-orange-500",
-  blue: "bg-blue-100 text-blue-600",
-  purple: "bg-purple-100 text-purple-600",
-  amber: "bg-amber-100 text-amber-600",
+  emerald: "bg-[#E8F5E9] text-[#00615F]",
+  orange: "bg-[#FFF3E0] text-[#E65100]",
+  blue: "bg-[#E3F2FD] text-[#1565C0]",
+  purple: "bg-[#F3E5F5] text-[#6A1B9A]",
+  amber: "bg-[#FFF8E1] text-[#F57F17]",
 };
 
 export function StatCard({ title, value, subtitle, icon: Icon, trend, className, color = "emerald" }: StatCardProps) {
   return (
-    <div className={cn(
-      "rounded-xl border bg-white p-5 shadow-sm hover:shadow-md transition-shadow duration-200",
-      className
-    )}>
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={cn(
+        "rounded-2xl border border-gray-100 bg-white p-5 hover:shadow-lg hover:shadow-[#00615F]/5 transition-all duration-300",
+        className
+      )}
+    >
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <p className="text-sm font-medium text-gray-500">{title}</p>
-          <p className="mt-1.5 text-2xl font-bold text-gray-900 tracking-tight">{value}</p>
+          <p className="mt-1.5 text-2xl font-extrabold text-gray-900 tracking-tight">{value}</p>
           {subtitle && <p className="mt-0.5 text-xs text-gray-400">{subtitle}</p>}
           {trend && (
             <div className="mt-2 flex items-center gap-1">
-              <span className={cn("text-xs font-semibold", trend.positive ? "text-emerald-600" : "text-red-500")}>
+              <span className={cn("text-xs font-bold", trend.positive ? "text-[#00615F]" : "text-red-500")}>
                 {trend.positive ? "↑" : "↓"} {trend.value}
               </span>
               <span className="text-xs text-gray-400">vs last month</span>
             </div>
           )}
         </div>
-        <div className={cn("flex h-10 w-10 items-center justify-center rounded-lg", iconBgMap[color])}>
-          <Icon className="h-5 w-5" />
+        <div className={cn("flex h-11 w-11 items-center justify-center rounded-xl", iconBgMap[color])}>
+          <Icon className="h-5.5 w-5.5" />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -59,19 +56,19 @@ type BadgeVariant = "pending" | "accepted" | "on_the_way" | "picked_up" | "deliv
 
 const badgeStyles: Record<BadgeVariant, string> = {
   pending: "bg-amber-50 text-amber-700 border-amber-200",
-  accepted: "bg-blue-50 text-blue-700 border-blue-200",
-  on_the_way: "bg-indigo-50 text-indigo-700 border-indigo-200",
-  picked_up: "bg-violet-50 text-violet-700 border-violet-200",
-  delivered: "bg-cyan-50 text-cyan-700 border-cyan-200",
-  completed: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  accepted: "bg-[#E3F2FD] text-[#1565C0] border-[#BBDEFB]",
+  on_the_way: "bg-[#E8F5E9] text-[#00615F] border-[#C8E6C9]",
+  picked_up: "bg-[#E8F5E9] text-[#00615F] border-[#C8E6C9]",
+  delivered: "bg-[#E8F5E9] text-[#00615F] border-[#C8E6C9]",
+  completed: "bg-[#E8F5E9] text-[#00615F] border-[#C8E6C9]",
   cancelled: "bg-red-50 text-red-600 border-red-200",
-  active: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  verified: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  active: "bg-[#E8F5E9] text-[#00615F] border-[#C8E6C9]",
+  verified: "bg-[#E8F5E9] text-[#00615F] border-[#C8E6C9]",
   rejected: "bg-red-50 text-red-600 border-red-200",
-  info: "bg-blue-50 text-blue-700 border-blue-200",
-  success: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  info: "bg-[#E3F2FD] text-[#1565C0] border-[#BBDEFB]",
+  success: "bg-[#E8F5E9] text-[#00615F] border-[#C8E6C9]",
   warning: "bg-amber-50 text-amber-700 border-amber-200",
-  alert: "bg-orange-50 text-orange-600 border-orange-200",
+  alert: "bg-[#FFF3E0] text-[#E65100] border-[#FFE0B2]",
 };
 
 export function StatusBadge({ status }: { status: string }) {
@@ -89,11 +86,25 @@ export function StatusBadge({ status }: { status: string }) {
 export function EmptyState({ icon: Icon, title, description }: { icon: LucideIcon; title: string; description: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100 text-gray-400 mb-4">
-        <Icon className="h-7 w-7" />
+      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#F5F0EB] text-gray-400 mb-4">
+        <Icon className="h-8 w-8" />
       </div>
-      <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-      <p className="mt-1 max-w-sm text-sm text-gray-500">{description}</p>
+      <h3 className="text-lg font-bold text-gray-900">{title}</h3>
+      <p className="mt-1.5 max-w-sm text-sm text-gray-500">{description}</p>
     </div>
   );
 }
+
+/* ─── Food images for dashboards ──────────────────────────── */
+export const foodImages = {
+  bread: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=250&fit=crop",
+  vegetables: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&h=250&fit=crop",
+  restaurant: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop",
+  delivery: "https://images.unsplash.com/photo-1526367790999-0150786686a2?w=400&h=250&fit=crop",
+  community: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=400&h=250&fit=crop",
+  salad: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=250&fit=crop",
+  grocery: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=250&fit=crop",
+  cooking: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=400&h=250&fit=crop",
+  biogas: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&h=250&fit=crop",
+  farm: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=400&h=250&fit=crop",
+};

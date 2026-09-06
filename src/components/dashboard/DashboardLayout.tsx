@@ -16,7 +16,6 @@ import {
   ChevronRight,
   Search,
   Menu,
-  X,
   BarChart3,
   ClipboardList,
   MapPin,
@@ -97,168 +96,106 @@ const roleLabels: Record<UserRole, string> = {
 };
 
 const roleColors: Record<UserRole, string> = {
-  user: "bg-emerald-50 text-emerald-700",
-  employee: "bg-emerald-50 text-emerald-700",
-  business: "bg-emerald-50 text-emerald-700",
-  admin: "bg-emerald-100 text-emerald-800",
-  biogas: "bg-emerald-50 text-emerald-700",
+  user: "bg-[#E8F5E9] text-[#00615F]",
+  employee: "bg-[#E3F2FD] text-[#1565C0]",
+  business: "bg-[#FFF3E0] text-[#E65100]",
+  admin: "bg-[#F3E5F5] text-[#6A1B9A]",
+  biogas: "bg-[#E8F5E9] text-[#00615F]",
 };
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, signOut } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
   const role = (user?.role as UserRole) || "user";
-  const navItems = navByRole[role] || navByRole.user;
-  const unreadCount = 3;
 
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
   };
 
-  return (
-    <div className="flex h-screen overflow-hidden bg-[#f8faf8]">
-      {mobileOpen && (
-        <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={() => setMobileOpen(false)} />
-      )}
-
-      <aside
-        className={cn(
-          "fixed inset-y-0 left-0 z-50 flex flex-col transition-all duration-300 lg:relative",
-          collapsed ? "w-[72px]" : "w-[260px]",
-          mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
-          "bg-gradient-to-b from-[#1a3a2a] to-[#0f2318] text-white"
-        )}
-      >
-        <div className="flex h-16 items-center justify-between border-b border-white/10 px-4">
-          {!collapsed && (
-            <Link to="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500">
-                <Leaf className="h-4 w-4 text-white" />
-              </div>
-              <span className="text-sm font-bold tracking-tight">FoodHub</span>
-            </Link>
-          )}
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="hidden lg:flex h-7 w-7 items-center justify-center rounded-md text-white/60 hover:bg-white/10 hover:text-white transition-colors"
-          >
-            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          </button>
-          <button
-            onClick={() => setMobileOpen(false)}
-            className="lg:hidden h-7 w-7 flex items-center justify-center rounded-md text-white/60 hover:bg-white/10"
-          >
-            <X className="h-4 w-4" />
-          </button>
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full">
+      <div className="flex items-center gap-2.5 px-4 h-16 border-b border-white/15">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15">
+          <Leaf className="h-5 w-5 text-white" />
         </div>
-
-        {!collapsed && (
-          <div className="px-4 py-3 border-b border-white/10">
-            <span className={cn("inline-block rounded-full px-2.5 py-0.5 text-xs font-medium", roleColors[role])}>
-              {roleLabels[role]}
-            </span>
-          </div>
-        )}
-
-        <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-1">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.href || (item.href !== "/dashboard" && location.pathname.startsWith(item.href));
-            return (
-              <Link
-                key={item.href}
-                to={item.href}
-                onClick={() => setMobileOpen(false)}
-                className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
-                  isActive
-                    ? "bg-emerald-500/20 text-white shadow-sm"
-                    : "text-white/60 hover:bg-white/8 hover:text-white"
-                )}
-                title={collapsed ? item.label : undefined}
-              >
-                <item.icon className={cn("h-4.5 w-4.5 shrink-0", isActive ? "text-emerald-400" : "")} />
-                {!collapsed && <span>{item.label}</span>}
-                {!collapsed && item.label === "Notifications" && unreadCount > 0 && (
-                  <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white px-1">
-                    {unreadCount}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="border-t border-white/10 p-3 space-y-1">
-          <Link
-            to="/"
-            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white/60 hover:bg-white/8 hover:text-white transition-colors"
-          >
-            <Home className="h-4.5 w-4.5 shrink-0" />
-            {!collapsed && <span>Back to Home</span>}
-          </Link>
-          <button
-            onClick={handleSignOut}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white/60 hover:bg-red-500/15 hover:text-red-400 transition-colors"
-          >
-            <LogOut className="h-4.5 w-4.5 shrink-0" />
-            {!collapsed && <span>Sign Out</span>}
-          </button>
-        </div>
-      </aside>
-
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex h-16 items-center justify-between border-b border-emerald-100 bg-white/80 backdrop-blur-sm px-4 lg:px-6">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setMobileOpen(true)}
-              className="lg:hidden flex h-9 w-9 items-center justify-center rounded-lg text-emerald-800 hover:bg-emerald-50 transition-colors"
-            >
-              <Menu className="h-5 w-5" />
-            </button>
-            <div className="relative hidden sm:block">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-400" />
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-9 w-64 rounded-lg border border-emerald-200 bg-emerald-50/50 pl-9 pr-4 text-sm text-emerald-900 placeholder:text-emerald-400 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-400/20 transition-colors"
-              />
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
+        {!collapsed && <span className="text-lg font-extrabold text-white tracking-tight">FoodHub</span>}
+      </div>
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        {navByRole[role].map((item) => {
+          const active = location.pathname === item.href;
+          return (
             <Link
-              to="/dashboard/notifications"
-              className="relative flex h-9 w-9 items-center justify-center rounded-lg text-emerald-700 hover:bg-emerald-50 transition-colors"
-            >
-              <Bell className="h-5 w-5" />
-              {unreadCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-orange-500 text-[9px] font-bold text-white px-1">
-                  {unreadCount}
-                </span>
+              key={item.href}
+              to={item.href}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200",
+                active ? "bg-white/15 text-white" : "text-white/60 hover:text-white hover:bg-white/8"
               )}
+            >
+              <item.icon className="h-5 w-5 shrink-0" />
+              {!collapsed && <span>{item.label}</span>}
             </Link>
-            <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-white px-3 py-1.5 ml-1">
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-600 text-xs font-bold text-white">
-                {user?.name?.charAt(0) || "U"}
-              </div>
-              <div className="hidden md:block">
-                <p className="text-xs font-medium text-emerald-900 leading-tight">{user?.name || "User"}</p>
-                <p className="text-[10px] text-emerald-600 leading-tight">{roleLabels[role]}</p>
-              </div>
+          );
+        })}
+      </nav>
+      <div className="px-3 py-4 border-t border-white/15">
+        {!collapsed && (
+          <div className="flex items-center gap-3 px-3 mb-3">
+            <div className="h-9 w-9 rounded-full bg-white/15 flex items-center justify-center text-white text-sm font-bold">
+              {user?.name?.charAt(0) || "U"}
             </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-white truncate">{user?.name || "User"}</p>
+              <p className="text-xs text-white/50">{roleLabels[role]}</p>
+            </div>
+          </div>
+        )}
+        <button onClick={handleSignOut} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-semibold text-white/60 hover:text-white hover:bg-white/8 transition-all">
+          <LogOut className="h-5 w-5" />
+          {!collapsed && <span>Sign Out</span>}
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex h-screen bg-[#FBF7F4]">
+      <aside className={cn("hidden lg:flex flex-col bg-[#00615F] transition-all duration-300", collapsed ? "w-[68px]" : "w-64")}>
+        <SidebarContent />
+      </aside>
+      {mobileOpen && (
+        <div className="lg:hidden fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
+          <aside className="absolute left-0 top-0 bottom-0 w-64 bg-[#00615F] z-10"><SidebarContent /></aside>
+        </div>
+      )}
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="h-16 bg-white border-b border-gray-100 flex items-center px-4 lg:px-6 gap-4 shrink-0">
+          <button onClick={() => setMobileOpen(true)} className="lg:hidden flex h-9 w-9 items-center justify-center rounded-xl hover:bg-gray-100 transition-colors">
+            <Menu className="h-5 w-5 text-gray-600" />
+          </button>
+          <button onClick={() => setCollapsed(!collapsed)} className="hidden lg:flex h-9 w-9 items-center justify-center rounded-xl hover:bg-gray-100 transition-colors">
+            {collapsed ? <ChevronRight className="h-4 w-4 text-gray-500" /> : <ChevronLeft className="h-4 w-4 text-gray-500" />}
+          </button>
+          <div className="flex-1 max-w-md">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input type="text" placeholder="Search donations, users..." className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#F5F0EB] border border-transparent focus:border-[#00615F]/30 focus:bg-white text-sm outline-none transition-all placeholder:text-gray-400" />
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link to="/dashboard/notifications" className="relative flex h-9 w-9 items-center justify-center rounded-xl hover:bg-[#F5F0EB] transition-colors">
+              <Bell className="h-5 w-5 text-gray-500" />
+              <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-[#00615F] text-white text-[10px] font-bold flex items-center justify-center">3</span>
+            </Link>
+            <span className={cn("rounded-full px-2.5 py-0.5 text-xs font-bold", roleColors[role])}>{roleLabels[role]}</span>
           </div>
         </header>
-
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
-          {children}
-        </main>
+        <main className="flex-1 overflow-y-auto p-4 lg:p-8">{children}</main>
       </div>
     </div>
   );

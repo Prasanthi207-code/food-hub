@@ -1,93 +1,118 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { StatCard, StatusBadge, EmptyState } from "@/components/dashboard/SharedComponents";
+import { motion } from "framer-motion";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/hooks/use-auth";
+import { StatCard, StatusBadge, EmptyState, foodImages } from "@/components/dashboard/SharedComponents";
+import { Building2, Heart, BarChart3, TrendingUp, Star, Package, Users, Briefcase, Plus, Award, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router";
-import { motion } from "framer-motion";
-import { Building2, UtensilsCrossed, CheckCircle2, TrendingUp, Users, ArrowRight, Star } from "lucide-react";
+
+const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
+const stagger = { visible: { transition: { staggerChildren: 0.06 } } };
 
 export default function BusinessDashboard() {
   const { user } = useAuth();
   const business = useQuery(api.mutations.businesses.getByUserId, user?._id ? { userId: user._id } : "skip");
-  const stats = useQuery(api.mutations.businesses.getStats, business?._id ? { businessId: business._id } : "skip");
-  const donations = useQuery(api.mutations.donations.listByDonor, user?._id ? { donorId: user._id } : "skip");
+  const donations = useQuery(api.mutations.donations.list);
+  const stats = useQuery(api.mutations.donations.getStats);
+
+  const myDonations = (donations || []).filter((d) => d.donorType === "business");
+  const completed = myDonations.filter((d) => d.status === "completed").length;
+  const totalKg = myDonations.reduce((a, d) => a + d.quantityKg, 0);
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.06 } } }} className="space-y-6">
-      <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
-        <h1 className="text-2xl font-extrabold text-gray-900 flex items-center gap-2">
-          <Building2 className="h-6 w-6 text-amber-500" />
-          {business?.businessName || "Business Dashboard"}
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">Manage your business donations and track your sustainability impact.</p>
+    <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-8">
+      {/* Hero banner */}
+      <motion.div variants={fadeUp} className="relative rounded-3xl overflow-hidden h-48 sm:h-56">
+        <img src={foodImages.restaurant} alt="Restaurant partner" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#E65100]/90 to-[#E65100]/60" />
+        <div className="absolute inset-0 flex items-center px-8">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+              {business?.businessName || "Business Dashboard"} 🏨
+            </h1>
+            <p className="text-orange-100 mt-1">Manage surplus food donations and track your sustainability impact.</p>
+            <Link to="/dashboard/create-donation" className="mt-3 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-bold text-[#E65100] hover:bg-orange-50 transition-colors">
+              <Plus className="h-4 w-4" /> Donate Surplus
+            </Link>
+          </div>
+        </div>
       </motion.div>
 
-      <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Total Donations" value={stats?.totalDonations ?? 0} icon={UtensilsCrossed} color="emerald" />
-        <StatCard title="Completed" value={stats?.completedDonations ?? 0} icon={CheckCircle2} color="emerald" />
-        <StatCard title="People Served" value={stats?.totalPeopleServed ?? 0} icon={Users} color="orange" />
-        <StatCard title="Impact Score" value={stats?.impactScore ?? 0} icon={Star} color="amber" />
+      {/* Stats */}
+      <motion.div variants={fadeUp} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard title="Total Donations" value={myDonations.length} icon={Heart} color="emerald" trend={{ value: "+12%", positive: true }} />
+        <StatCard title="Completed" value={completed} icon={CheckCircle2} color="emerald" />
+        <StatCard title="Food Rescued" value={`${totalKg.toFixed(0)} kg`} icon={Package} color="emerald" />
+        <StatCard title="Impact Score" value={business?.impactScore ?? 0} icon={Award} color="emerald" />
       </motion.div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="lg:col-span-2">
-          <Card className="border-gray-200 shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-base font-bold text-gray-900">Recent Donations</CardTitle>
-              <Link to="/dashboard/donations" className="text-sm font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1">View All <ArrowRight className="h-3.5 w-3.5" /></Link>
-            </CardHeader>
-            <CardContent>
-              {!donations || donations.length === 0 ? (
-                <EmptyState icon={UtensilsCrossed} title="No donations yet" description="Start donating surplus food from your business." />
-              ) : (
-                <div className="space-y-3">
-                  {donations.sort((a, b) => b.createdAt - a.createdAt).slice(0, 5).map((d) => (
-                    <div key={d._id} className="flex items-center justify-between rounded-xl border border-gray-100 p-3.5 hover:bg-gray-50 transition-colors">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600"><UtensilsCrossed className="h-4.5 w-4.5" /></div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-semibold text-gray-900 truncate">{d.foodName}</p>
-                          <p className="text-xs text-gray-500">{d.quantity} · {d.quantityKg} kg</p>
-                        </div>
-                      </div>
-                      <StatusBadge status={d.status} />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
+      {/* Impact score + subscription */}
+      <motion.div variants={fadeUp} className="grid md:grid-cols-2 gap-6">
+        <div className="rounded-3xl bg-[#00615F] p-6 text-white relative overflow-hidden">
+          <div className="absolute -top-6 -right-6 h-32 w-32 bg-white/10 rounded-full" />
+          <Award className="h-8 w-8 text-emerald-200 mb-3" />
+          <h3 className="text-xl font-extrabold">Your Impact Score</h3>
+          <p className="text-5xl font-extrabold mt-2">{business?.impactScore ?? 0}</p>
+          <p className="text-sm text-emerald-100 mt-1">Based on verified donations, successful deliveries, and consistent activity.</p>
+          <div className="mt-4 flex gap-6">
+            <div>
+              <p className="text-2xl font-extrabold">{myDonations.length}</p>
+              <p className="text-xs text-emerald-200">Total Donations</p>
+            </div>
+            <div>
+              <p className="text-2xl font-extrabold">{completed}</p>
+              <p className="text-xs text-emerald-200">Successful</p>
+            </div>
+          </div>
+        </div>
 
-        <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="space-y-4">
-          <Card className="border-gray-200 shadow-sm">
-            <CardContent className="p-5">
-              <p className="text-sm font-semibold text-gray-500">Subscription</p>
-              <p className="text-lg font-bold text-gray-900 capitalize mt-1">{stats?.subscriptionPlan ?? "Free"} Plan</p>
-              <Link to="/dashboard/subscription" className="text-sm text-emerald-600 hover:text-emerald-700 font-medium mt-2 inline-block">Upgrade Plan →</Link>
-            </CardContent>
-          </Card>
-          <Card className="border-gray-200 shadow-sm">
-            <CardContent className="p-5">
-              <p className="text-sm font-semibold text-gray-500">Success Rate</p>
-              <p className="text-3xl font-extrabold text-emerald-600 mt-1">{stats?.successRate ?? 0}%</p>
-              <p className="text-xs text-gray-500 mt-1">of donations successfully delivered</p>
-            </CardContent>
-          </Card>
-          <Link to="/dashboard/analytics">
-            <Card className="border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-              <CardContent className="p-5 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600"><TrendingUp className="h-5 w-5" /></div>
-                <div>
-                  <p className="text-sm font-bold text-gray-900">View Analytics</p>
-                  <p className="text-xs text-gray-500">Impact reports & trends</p>
-                </div>
-              </CardContent>
-            </Card>
+        <div className="rounded-3xl bg-white border border-gray-100 p-6">
+          <div className="flex items-center gap-2 mb-3">
+            <Briefcase className="h-5 w-5 text-[#E65100]" />
+            <h3 className="text-lg font-extrabold text-gray-900">Subscription Plan</h3>
+          </div>
+          <div className="rounded-2xl bg-[#FFF3E0] p-4 mb-4">
+            <p className="text-sm font-bold text-[#E65100] capitalize">{business?.subscriptionPlan || "Free"} Plan</p>
+            <p className="text-xs text-gray-500 mt-0.5">Active subscription</p>
+          </div>
+          <p className="text-sm text-gray-500">Upgrade to unlock advanced analytics, priority matching, and compliance reports.</p>
+          <Link to="/dashboard/subscription" className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-[#E65100] hover:underline">
+            View Plans →
           </Link>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
+
+      {/* Recent donations */}
+      <motion.div variants={fadeUp}>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-extrabold text-gray-900">Recent Donations</h2>
+          <Link to="/dashboard/donations" className="text-sm font-bold text-[#00615F] hover:underline">View All →</Link>
+        </div>
+        {myDonations.length === 0 ? (
+          <EmptyState icon={Heart} title="No donations yet" description="Start donating surplus food to build your impact score." />
+        ) : (
+          <div className="space-y-3">
+            {myDonations.slice(0, 5).map((d, i) => (
+              <motion.div
+                key={d._id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="flex items-center gap-4 rounded-2xl bg-white border border-gray-100 p-4 hover:shadow-md transition-all duration-300"
+              >
+                <div className="h-12 w-12 rounded-xl overflow-hidden shrink-0">
+                  <img src={foodImages[d.foodCategory === "bakery" ? "bread" : d.foodCategory === "produce" ? "vegetables" : "cooking"]} alt="" className="w-full h-full object-cover" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-gray-900 truncate">{d.foodName}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{d.quantityKg} kg · {d.servesPeople} people · {new Date(d.createdAt).toLocaleDateString()}</p>
+                </div>
+                <StatusBadge status={d.status} />
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </motion.div>
     </motion.div>
   );
 }
