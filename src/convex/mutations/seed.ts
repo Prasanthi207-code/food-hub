@@ -22,7 +22,7 @@ export const seed = mutation({
     const biz1 = await ctx.db.insert("users", { name: "Grand Hotel Kitchen", email: "kitchen@grandhotel.com", role: "business", createdAt: now - 60 * day });
     const biz2 = await ctx.db.insert("users", { name: "Pizza Paradise", email: "info@pizzaparadise.com", role: "business", createdAt: now - 55 * day });
     const biz3 = await ctx.db.insert("users", { name: "Green Leaf Restaurant", email: "greenleaf@restaurant.com", role: "business", createdAt: now - 50 * day });
-    const admin = await ctx.db.insert("users", { name: "Admin User", email: "admin@foodhub.com", role: "admin", createdAt: now - 90 * day });
+    const admin = await ctx.db.insert("users", { name: "Admin User", email: "admin@foodflow.com", role: "admin", createdAt: now - 90 * day });
     const bio1 = await ctx.db.insert("users", { name: "EcoBio Solutions", email: "partner@ecobio.com", role: "biogas", createdAt: now - 40 * day });
 
     // Create employees

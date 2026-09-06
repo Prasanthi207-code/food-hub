@@ -13,6 +13,12 @@ import "./index.css";
 const Landing = lazy(() => import("./pages/Landing.tsx"));
 const AuthPage = lazy(() => import("./pages/Auth.tsx"));
 const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
+const DonorRoutes = lazy(() => import("./pages/DonorRoutes.tsx"));
+const EmployeeRoutes = lazy(() => import("./pages/EmployeeRoutes.tsx"));
+const BusinessRoutes = lazy(() => import("./pages/BusinessRoutes.tsx"));
+const AdminRoutes = lazy(() => import("./pages/AdminRoutes.tsx"));
+const PartnerRoutes = lazy(() => import("./pages/PartnerRoutes.tsx"));
+const PlatformRoutes = lazy(() => import("./pages/PlatformRoutes.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 // Simple loading fallback for route transitions
@@ -132,6 +138,55 @@ createRoot(document.getElementById("root")!).render(
                   </RequireAuth>
                 }
               />
+              <Route
+                path="/donor/*"
+                element={
+                  <RequireAuth>
+                    <DonorRoutes />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/employee/*"
+                element={
+                  <RequireAuth>
+                    <EmployeeRoutes />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/business/*"
+                element={
+                  <RequireAuth>
+                    <BusinessRoutes />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/admin/*"
+                element={
+                  <RequireAuth>
+                    <AdminRoutes />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/partner/*"
+                element={
+                  <RequireAuth>
+                    <PartnerRoutes />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/*"
+                element={
+                  <RequireAuth>
+                    <PlatformRoutes />
+                  </RequireAuth>
+                }
+              />
+              <Route path="/404" element={<NotFound />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

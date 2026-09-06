@@ -8,21 +8,42 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
 
+import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/hooks/use-auth";
-import logo from "@/assets/logo.svg";
-import { ArrowRight, Loader2, Mail, UserX } from "lucide-react";
-import { Suspense, useEffect, useState } from "react";
+import { ArrowLeft, ArrowRight, Eye, EyeOff, Loader2, LockKeyhole, Mail, UserPlus } from "lucide-react";
+import { useMutation } from "convex/react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
+import { dashboardForRole } from "@/lib/role-routing";
 
 interface AuthProps {
   redirectAfterAuth?: string;
 }
+
+const authImages = {
+  signIn: {
+    src: "https://imgv2-1-f.scribdassets.com/img/word_document/750019592/original/b77c2d42cf/1727898670?v=1",
+    alt: "FoodFlow community and sustainability illustration",
+  },
+  signUp: {
+    src: "https://img.freepik.com/premium-photo/food-waste-recycling-facility-transforming-leftover-produce-into-new-products-created-with-generative-ai_762026-594.jpg",
+    alt: "Food waste recycling facility",
+  },
+};
+
+const authContent = {
+  signIn: {
+    eyebrow: "Welcome back to FoodFlow",
+    heading: "Continue making a meaningful difference.",
+    description: "Sign in to manage your donations, follow every pickup, and see how your surplus food helps communities and the planet.",
+  },
+  signUp: {
+    eyebrow: "Join the FoodFlow community",
+    heading: "Turn everyday surplus into real impact.",
+    description: "Create your free account to share surplus food, connect with trusted partners, track your impact, and help build a zero-waste community.",
+  },
+};
 
 function resolveRedirectAfterAuth(
   returnTo: string | null,
@@ -35,260 +56,191 @@ function resolveRedirectAfterAuth(
 }
 
 function Auth({ redirectAfterAuth }: AuthProps = {}) {
-  const { isLoading: authLoading, isAuthenticated, signIn } = useAuth();
+  const { isLoading: authLoading, isAuthenticated, signIn, user } = useAuth();
+  const completeRegistration = useMutation(api.mutations.users.completeRegistration);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirect = resolveRedirectAfterAuth(
     searchParams.get("returnTo"),
     redirectAfterAuth,
   );
-  const [step, setStep] = useState<"signIn" | { email: string }>("signIn");
-  const [otp, setOtp] = useState("");
+  const [mode, setMode] = useState<"signIn" | "signUp">("signIn");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [selectedRole, setSelectedRole] = useState("user");
+  const appliedRedirectRole = useRef(false);
+  const manualRedirect = useRef(false);
+  const registrationFormRef = useRef<HTMLFormElement>(null);
 
-  useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      navigate(redirect);
-    }
-  }, [authLoading, isAuthenticated, navigate, redirect]);
-  const handleEmailSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleGoogleSignIn = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const formData = new FormData(event.currentTarget);
-      await signIn("email-otp", formData);
-      setStep({ email: formData.get("email") as string });
-      setIsLoading(false);
+      if (mode === "signUp" && registrationFormRef.current) {
+        const formData = new FormData(registrationFormRef.current);
+        sessionStorage.setItem("foodhub_registration", JSON.stringify({
+          name: formData.get("name"),
+          phone: formData.get("phone"),
+          address: formData.get("address"),
+          role: selectedRole,
+        }));
+      }
+      await signIn("google", { redirectTo: redirect });
     } catch (error) {
-      console.error("Email sign-in error:", error);
+      console.error("Google authentication error:", error);
       setError(
         error instanceof Error
           ? error.message
-          : "Failed to send verification code. Please try again.",
+          : "Google authentication failed. Please try again.",
       );
       setIsLoading(false);
     }
   };
 
-  const handleOtpSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    if (!authLoading && isAuthenticated && !manualRedirect.current) {
+      const savedRegistration = sessionStorage.getItem("foodhub_registration");
+      if (savedRegistration && !appliedRedirectRole.current) {
+        appliedRedirectRole.current = true;
+        sessionStorage.removeItem("foodhub_registration");
+        const registration = JSON.parse(savedRegistration);
+        void completeRegistration(registration)
+          .then(() => navigate(dashboardForRole(registration.role, redirect)))
+          .catch((error) => setError(error instanceof Error ? error.message : "Unable to save your registration details."));
+      } else {
+        navigate(dashboardForRole(user?.role, redirect));
+      }
+    }
+  }, [authLoading, isAuthenticated, navigate, redirect, completeRegistration, user?.role]);
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
     setError(null);
     try {
       const formData = new FormData(event.currentTarget);
-      await signIn("email-otp", formData);
-
-      console.log("signed in");
-
-      navigate(redirect);
+      formData.set("flow", mode);
+      await signIn("password", formData);
+      if (mode === "signUp") {
+        await completeRegistration({
+          name: String(formData.get("name") || ""),
+          phone: String(formData.get("phone") || ""),
+          address: String(formData.get("address") || ""),
+          role: selectedRole as "user" | "business" | "employee" | "biogas",
+        });
+        manualRedirect.current = true;
+        navigate(dashboardForRole(selectedRole, redirect));
+      } else {
+        manualRedirect.current = true;
+        navigate(dashboardForRole(user?.role, redirect));
+      }
     } catch (error) {
-      console.error("OTP verification error:", error);
-
-      setError("The verification code you entered is incorrect.");
-      setIsLoading(false);
-
-      setOtp("");
-    }
-  };
-
-  const handleGuestLogin = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      console.log("Attempting anonymous sign in...");
-      await signIn("anonymous");
-      console.log("Anonymous sign in successful");
-      navigate(redirect);
-    } catch (error) {
-      console.error("Guest login error:", error);
-      console.error("Error details:", JSON.stringify(error, null, 2));
-      setError(`Failed to sign in as guest: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("Password authentication error:", error);
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Authentication failed. Please check your details and try again.",
+      );
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-[#F5F0EB]">
 
       
       {/* Auth Content */}
-      <div className="flex-1 flex items-center justify-center">
-        <div className="flex items-center justify-center h-full flex-col">
-        <Card className="min-w-[350px] pb-0 border shadow-md">
-          {step === "signIn" ? (
-            <>
-              <CardHeader className="text-center">
-              <div className="flex justify-center">
-                    <img
-                      src={logo}
-                      alt="Lock Icon"
-                      width={64}
-                      height={64}
-                      className="rounded-lg mb-4 mt-4 cursor-pointer"
-                      onClick={() => navigate("/")}
-                    />
-                  </div>
-                <CardTitle className="text-xl">Get Started</CardTitle>
-                <CardDescription>
-                  Enter your email to log in or sign up
-                </CardDescription>
-              </CardHeader>
-              <form onSubmit={handleEmailSubmit}>
-                <CardContent>
-                  
-                  <div className="relative flex items-center gap-2">
-                    <div className="relative flex-1">
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        name="email"
-                        placeholder="name@example.com"
-                        type="email"
-                        className="pl-9"
-                        disabled={isLoading}
-                        required
-                      />
-                    </div>
-                    <Button
-                      type="submit"
-                      variant="outline"
-                      size="icon"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <ArrowRight className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-                  {error && (
-                    <p className="mt-2 text-sm text-red-500">{error}</p>
-                  )}
-                  
-                  <div className="mt-4">
-                    <div className="relative">
-                      <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t" />
-                      </div>
-                      <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-background px-2 text-muted-foreground">
-                          Or
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full mt-4"
-                      onClick={handleGuestLogin}
-                      disabled={isLoading}
-                    >
-                      <UserX className="mr-2 h-4 w-4" />
-                      Continue as Guest
-                    </Button>
-                  </div>
-                </CardContent>
-              </form>
-            </>
-          ) : (
-            <>
-              <CardHeader className="text-center mt-4">
-                <CardTitle>Check your email</CardTitle>
-                <CardDescription>
-                  We've sent a code to {step.email}
-                </CardDescription>
-              </CardHeader>
-              <form onSubmit={handleOtpSubmit}>
-                <CardContent className="pb-4">
-                  <input type="hidden" name="email" value={step.email} />
-                  <input type="hidden" name="code" value={otp} />
+      <div className="flex-1 flex items-center justify-center px-4 py-10 sm:px-6">
+        <div className="grid w-full max-w-5xl items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(350px,420px)] lg:gap-16">
+          <aside className="hidden lg:block">
+            <div>
+              <img
+                src={authImages[mode].src}
+                alt={authImages[mode].alt}
+                className={`h-72 w-full rounded-3xl ${mode === "signIn" ? "bg-gray-50 object-contain" : "object-cover"}`}
+              />
+              <div className="mt-8 max-w-xl">
+                <p className="text-sm font-bold uppercase tracking-widest text-[#00615F]">{authContent[mode].eyebrow}</p>
+                <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-gray-900">
+                  {authContent[mode].heading}
+                </h2>
+                <p className="mt-4 leading-relaxed text-gray-500">
+                  {authContent[mode].description}
+                </p>
+              </div>
+            </div>
+          </aside>
 
-                  <div className="flex justify-center">
-                    <InputOTP
-                      value={otp}
-                      onChange={setOtp}
-                      maxLength={6}
-                      disabled={isLoading}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && otp.length === 6 && !isLoading) {
-                          // Find the closest form and submit it
-                          const form = (e.target as HTMLElement).closest("form");
-                          if (form) {
-                            form.requestSubmit();
-                          }
-                        }
-                      }}
-                    >
-                      <InputOTPGroup>
-                        {Array.from({ length: 6 }).map((_, index) => (
-                          <InputOTPSlot key={index} index={index} />
-                        ))}
-                      </InputOTPGroup>
-                    </InputOTP>
-                  </div>
-                  {error && (
-                    <p className="mt-2 text-sm text-red-500 text-center">
-                      {error}
-                    </p>
+          <div className="flex flex-col">
+          <Button type="button" variant="ghost" className="mb-4 self-start" onClick={() => navigate("/")}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to home
+          </Button>
+          <Card className="w-full pb-0 border shadow-md">
+          <CardHeader className="text-center">
+                <CardTitle className="text-xl">{mode === "signIn" ? "Welcome back" : "Create your account"}</CardTitle>
+                <CardDescription>
+                  {mode === "signIn" ? "Log in to continue to FoodFlow" : "Register with your email and password"}
+                </CardDescription>
+              </CardHeader>
+              <form ref={registrationFormRef} onSubmit={handleSubmit}>
+                <CardContent className="space-y-6 pb-8">
+                  {mode === "signUp" && (
+                    <>
+                      <Input name="name" placeholder="Full name or organization name" disabled={isLoading} required />
+                      <Input name="phone" placeholder="Phone number" type="tel" disabled={isLoading} required />
+                      <Input name="address" placeholder="City or pickup address" disabled={isLoading} required />
+                    </>
                   )}
-                  <p className="text-sm text-muted-foreground text-center mt-4">
-                    Didn't receive a code?{" "}
-                    <Button
-                      variant="link"
-                      className="p-0 h-auto"
-                      onClick={() => setStep("signIn")}
-                    >
-                      Try again
-                    </Button>
-                  </p>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input name="email" placeholder="name@example.com" type="email" className="pl-9" disabled={isLoading} required />
+                  </div>
+                  {mode === "signUp" && (
+                    <div className="space-y-2">
+                      <label htmlFor="account-role" className="text-sm font-medium text-gray-700">
+                        How will you use FoodFlow?
+                      </label>
+                      <select
+                        id="account-role"
+                        value={selectedRole}
+                        onChange={(event) => setSelectedRole(event.target.value)}
+                        className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus:ring-2 focus:ring-[#00615F]/20"
+                        disabled={isLoading}
+                      >
+                        <option value="user">Donor</option>
+                        <option value="business">Business Partner</option>
+                        <option value="employee">Collection Agent</option>
+                        <option value="biogas">Waste-Processing Partner</option>
+                      </select>
+                    </div>
+                  )}
+                  <div className="relative">
+                    <LockKeyhole className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input name="password" placeholder="Password" type={showPassword ? "text" : "password"} className="pl-9 pr-10" minLength={8} disabled={isLoading} required />
+                    <button type="button" aria-label={showPassword ? "Hide password" : "Show password"} onClick={() => setShowPassword((value) => !value)} className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground">
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  {error && <p className="text-sm text-red-500">{error}</p>}
                 </CardContent>
-                <CardFooter className="flex-col gap-2">
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={isLoading || otp.length !== 6}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Verifying...
-                      </>
-                    ) : (
-                      <>
-                        Verify code
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </>
-                    )}
+                <CardFooter className="flex-col gap-3">
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
+                    {mode === "signIn" ? "Log in" : "Create account"}
                   </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => setStep("signIn")}
-                    disabled={isLoading}
-                    className="w-full"
-                  >
-                    Use different email
+                  <Button type="button" variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
+                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <span className="mr-2 font-bold">G</span>}
+                    Continue with Google
+                  </Button>
+                  <Button type="button" variant="ghost" className="w-full" onClick={() => { setMode(mode === "signIn" ? "signUp" : "signIn"); setError(null); }} disabled={isLoading}>
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    {mode === "signIn" ? "Need an account? Register" : "Already have an account? Log in"}
                   </Button>
                 </CardFooter>
               </form>
-            </>
-          )}
-
-          <div className="py-4 px-6 text-xs text-center text-muted-foreground bg-muted border-t rounded-b-lg">
-            Secured by{" "}
-            <a
-              href="https://freebuff.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-primary transition-colors"
-            >
-              freebuff.com
-            </a>
+          </Card>
           </div>
-        </Card>
         </div>
       </div>
     </div>

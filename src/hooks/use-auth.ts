@@ -5,7 +5,13 @@ import { useConvexAuth, useQuery } from "convex/react";
 export function useAuth() {
   const { isLoading: isAuthLoading, isAuthenticated } = useConvexAuth();
   const user = useQuery(api.users.currentUser);
-  const { signIn, signOut } = useAuthActions();
+  const { signIn, signOut: authSignOut } = useAuthActions();
+
+  const signOut = async () => {
+    sessionStorage.removeItem("foodhub_registration");
+    localStorage.removeItem("foodflow_donor_donations");
+    await authSignOut();
+  };
 
   // Derive isLoading directly from the dependencies instead of managing separate state
   const isLoading = isAuthLoading || user === undefined;

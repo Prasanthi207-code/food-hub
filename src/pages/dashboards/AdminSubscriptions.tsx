@@ -13,7 +13,7 @@ export default function AdminSubscriptions() {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
       <div>
         <h1 className="text-2xl font-extrabold text-gray-900 flex items-center gap-2"><Briefcase className="h-6 w-6 text-amber-500" /> Subscription Management</h1>
-        <p className="text-sm text-gray-500 mt-1">View and manage business subscription plans across FoodHub.</p>
+        <p className="text-sm text-gray-500 mt-1">View and manage business subscription plans across FoodFlow.</p>
       </div>
       {activeBusinesses.length === 0 ? (
         <Card className="border-gray-200 shadow-sm"><CardContent><EmptyState icon={Briefcase} title="No active subscriptions" description="Business subscriptions will appear here." /></CardContent></Card>

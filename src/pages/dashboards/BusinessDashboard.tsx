@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/hooks/use-auth";
-import { StatCard, StatusBadge, EmptyState, foodImages } from "@/components/dashboard/SharedComponents";
+import { StatCard, StatusBadge, EmptyState, foodImages, getFoodImage } from "@/components/dashboard/SharedComponents";
 import { Building2, Heart, BarChart3, TrendingUp, Star, Package, Users, Briefcase, Plus, Award, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router";
 
@@ -101,7 +101,7 @@ export default function BusinessDashboard() {
                 className="flex items-center gap-4 rounded-2xl bg-white border border-gray-100 p-4 hover:shadow-md transition-all duration-300"
               >
                 <div className="h-12 w-12 rounded-xl overflow-hidden shrink-0">
-                  <img src={foodImages[d.foodCategory === "bakery" ? "bread" : d.foodCategory === "produce" ? "vegetables" : "cooking"]} alt="" className="w-full h-full object-cover" />
+                  <img src={getFoodImage(d.foodCategory)} alt={d.foodCategory} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-gray-900 truncate">{d.foodName}</p>

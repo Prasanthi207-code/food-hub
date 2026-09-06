@@ -31,7 +31,7 @@ export default function EmployeeRequests() {
           <ClipboardList className="h-6 w-6 text-orange-500" />
           Available Requests
         </h1>
-        <p className="text-sm text-gray-500 mt-1">Browse and accept donation pickup requests from the FoodHub network.</p>
+        <p className="text-sm text-gray-500 mt-1">Browse and accept donation pickup requests from the FoodFlow network.</p>
       </div>
       {!available || available.length === 0 ? (
         <Card className="border-gray-200 shadow-sm">

@@ -107,4 +107,16 @@ export const foodImages = {
   cooking: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=400&h=250&fit=crop",
   biogas: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&h=250&fit=crop",
   farm: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=400&h=250&fit=crop",
+  rescue: "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=400&h=250&fit=crop",
+  compost: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400&h=250&fit=crop",
+  organic: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=400&h=250&fit=crop",
+  cooked: "https://images.unsplash.com/photo-1547592180-85f173990554?w=400&h=250&fit=crop",
+  raw: "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=400&h=250&fit=crop",
+  packaged: "https://images.unsplash.com/photo-1584473457493-17c4c24290c8?w=400&h=250&fit=crop",
+  dairy: "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&h=250&fit=crop",
+  other: "https://images.unsplash.com/photo-1579113800032-c38bd7635818?w=400&h=250&fit=crop",
 };
+
+export function getFoodImage(category: string) {
+  return foodImages[category as keyof typeof foodImages] || foodImages.other;
+}

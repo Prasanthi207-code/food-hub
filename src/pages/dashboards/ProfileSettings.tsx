@@ -6,7 +6,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { User, Mail, Phone, MapPin, Save, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function ProfileSettings() {
@@ -18,6 +18,15 @@ export default function ProfileSettings() {
     phone: user?.phone || "",
     address: user?.address || "",
   });
+
+  useEffect(() => {
+    if (!user) return;
+    setForm({
+      name: user.name || "",
+      phone: user.phone || "",
+      address: user.address || "",
+    });
+  }, [user?._id, user?.name, user?.phone, user?.address]);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -38,7 +47,7 @@ export default function ProfileSettings() {
           <User className="h-6 w-6 text-emerald-600" />
           Profile Settings
         </h1>
-        <p className="text-sm text-gray-500 mt-1">Manage your FoodHub account details.</p>
+        <p className="text-sm text-gray-500 mt-1">Manage your FoodFlow account details.</p>
       </div>
 
       <Card className="border-gray-200 shadow-sm">

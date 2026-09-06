@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useNavigate } from "react-router";
-import { Heart, AlertTriangle, CheckCircle2, Loader2, Shield } from "lucide-react";
+import { Heart, AlertTriangle, CheckCircle2, Loader2, Shield, Sparkles, Upload, Info } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
@@ -16,6 +16,8 @@ export default function CreateDonation() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [safetyDeclared, setSafetyDeclared] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | undefined>();
+  const [assistantOpen, setAssistantOpen] = useState(false);
   const [form, setForm] = useState({
     foodName: "",
     foodCategory: "cooked" as string,
@@ -26,6 +28,7 @@ export default function CreateDonation() {
     preparationDate: "",
     expiryDate: "",
     pickupAddress: "",
+    pickupTimeWindow: "",
     contactPhone: "",
     instructions: "",
   });
@@ -50,7 +53,9 @@ export default function CreateDonation() {
         preparationDate: form.preparationDate,
         expiryDate: form.expiryDate,
         pickupAddress: form.pickupAddress,
+        pickupTimeWindow: form.pickupTimeWindow,
         contactPhone: form.contactPhone,
+        imageUrl: imagePreview,
         instructions: form.instructions,
         safetyDeclaration: safetyDeclared,
         donorType: "user",
@@ -71,7 +76,7 @@ export default function CreateDonation() {
           <Heart className="h-6 w-6 text-orange-500" />
           Donate Surplus Food
         </h1>
-        <p className="text-sm text-gray-500 mt-1">Share your surplus food with communities in need through FoodHub.</p>
+        <p className="text-sm text-gray-500 mt-1">Share your surplus food with communities in need through FoodFlow.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -99,6 +104,27 @@ export default function CreateDonation() {
                 </select>
               </div>
             </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Food Image</label>
+                <label className="flex min-h-24 cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 text-sm text-gray-500 hover:border-emerald-400 hover:bg-emerald-50/40">
+                  <Upload className="h-4 w-4" />
+                  {imagePreview ? "Change image" : "Upload a clear food image"}
+                  <input type="file" accept="image/*" className="sr-only" onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = () => setImagePreview(String(reader.result));
+                    reader.readAsDataURL(file);
+                  }} />
+                </label>
+                {imagePreview && <img src={imagePreview} alt="Donation preview" className="mt-2 h-20 w-full rounded-lg object-cover" />}
+              </div>
+              <div className="rounded-lg border border-[#C8E6C9] bg-[#F3FBF4] p-3 text-xs leading-5 text-gray-600">
+                <div className="flex items-center gap-2 font-bold text-[#00615F]"><Info className="h-4 w-4" /> Image guidance</div>
+                <p className="mt-2">Use a well-lit image that helps the collection team understand the food and packaging. Images never replace the safety declaration.</p>
+              </div>
+            </div>
             <div className="grid sm:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Quantity *</label>
@@ -122,6 +148,17 @@ export default function CreateDonation() {
                 <option value="not_for_human">Not Suitable for Human Consumption</option>
               </select>
             </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-[#C8E6C9] bg-[#F3FBF4] shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base font-bold text-[#00615F]"><Sparkles className="h-5 w-5" /> Food Information Assistant <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#7A9C8B]">Optional</span></CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm leading-6 text-gray-600">Get help classifying the food type, estimating servings from the information you provide, and preparing a handling note. This assistant does not verify whether food is safe to eat and never replaces food-safety review.</p>
+            <button type="button" onClick={() => setAssistantOpen((open) => !open)} className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#00615F] px-3 py-2 text-xs font-bold text-white hover:bg-[#005550]">{assistantOpen ? "Hide guidance" : "Suggest information"}<Sparkles className="h-3.5 w-3.5" /></button>
+            {assistantOpen && <div className="mt-4 rounded-xl border border-[#C8E6C9] bg-white p-4 text-sm text-gray-600"><p><strong>Suggested category:</strong> {form.foodCategory || "Choose a category above"}</p><p className="mt-2"><strong>Serving estimate:</strong> {form.servesPeople ? `${form.servesPeople} servings provided` : "Add an estimated serving count"}</p><p className="mt-2"><strong>Handling reminder:</strong> Keep the food covered and clearly label allergens or special instructions.</p></div>}
           </CardContent>
         </Card>
 
@@ -159,6 +196,10 @@ export default function CreateDonation() {
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Contact Phone *</label>
                 <Input placeholder="+1-555-000-0000" value={form.contactPhone} onChange={(e) => updateField("contactPhone", e.target.value)} required />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Preferred Pickup Time Window *</label>
+                <Input placeholder="e.g., Today, 6 PM - 8 PM" value={form.pickupTimeWindow} onChange={(e) => updateField("pickupTimeWindow", e.target.value)} required />
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Additional Instructions</label>
@@ -193,7 +234,7 @@ export default function CreateDonation() {
                     <li>The food has been kept at appropriate temperatures</li>
                     <li>No items are past their safe consumption window</li>
                     <li>I have not used expired or contaminated ingredients</li>
-                    <li>FoodHub will verify donations according to platform safety standards</li>
+                    <li>FoodFlow will verify donations according to platform safety standards</li>
                     <li>Food marked "Not Suitable for Human Consumption" will be routed to waste-processing partners</li>
                   </ul>
                   <label className="flex items-center gap-3 mt-4 cursor-pointer">

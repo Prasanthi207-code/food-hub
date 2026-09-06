@@ -23,7 +23,7 @@ export default function EmployeePerformance() {
           <TrendingUp className="h-6 w-6 text-emerald-600" />
           Performance Summary
         </h1>
-        <p className="text-sm text-gray-500 mt-1">Track your collection and delivery performance on FoodHub.</p>
+        <p className="text-sm text-gray-500 mt-1">Track your collection and delivery performance on FoodFlow.</p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Rating" value={`${employee?.rating?.toFixed(1) ?? "5.0"} ★`} icon={Star} color="amber" />

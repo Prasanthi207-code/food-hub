@@ -4,6 +4,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import {
   Home,
+  Award,
+  CircleHelp,
+  CheckCircle2,
   UtensilsCrossed,
   Truck,
   Building2,
@@ -15,6 +18,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Search,
+  SlidersHorizontal,
   Menu,
   BarChart3,
   ClipboardList,
@@ -27,6 +31,8 @@ import {
   Package,
   CalendarClock,
   TrendingUp,
+  Radio,
+  MessageSquareWarning,
 } from "lucide-react";
 
 export type UserRole = "user" | "employee" | "business" | "admin" | "biogas";
@@ -40,20 +46,29 @@ interface NavItem {
 const navByRole: Record<UserRole, NavItem[]> = {
   user: [
     { label: "Dashboard", icon: Home, href: "/dashboard" },
+    { label: "Donate Food", icon: Heart, href: "/dashboard/create-donation" },
     { label: "My Donations", icon: UtensilsCrossed, href: "/dashboard/donations" },
-    { label: "Create Donation", icon: Heart, href: "/dashboard/create-donation" },
-    { label: "Tracking", icon: MapPin, href: "/dashboard/tracking" },
+    { label: "Active Donations", icon: Package, href: "/dashboard/tracking" },
+    { label: "Donation Tracking", icon: MapPin, href: "/dashboard/tracking" },
+    { label: "Impact", icon: TrendingUp, href: "/dashboard#impact" },
     { label: "Notifications", icon: Bell, href: "/dashboard/notifications" },
+    { label: "Rewards & Recognition", icon: Award, href: "/dashboard#rewards" },
     { label: "Profile", icon: User, href: "/dashboard/profile" },
+    { label: "Help & Support", icon: CircleHelp, href: "/dashboard/profile#support" },
+    { label: "Settings", icon: SlidersHorizontal, href: "/dashboard/profile#settings" },
   ],
   employee: [
     { label: "Dashboard", icon: Home, href: "/dashboard" },
-    { label: "Available Requests", icon: ClipboardList, href: "/dashboard/requests" },
+    { label: "New Requests", icon: ClipboardList, href: "/dashboard/requests" },
     { label: "My Assignments", icon: Truck, href: "/dashboard/assignments" },
-    { label: "Tracking", icon: MapPin, href: "/dashboard/tracking" },
-    { label: "Delivery History", icon: Package, href: "/dashboard/history" },
+    { label: "Active Pickups", icon: Package, href: "/dashboard/assignments" },
+    { label: "Delivery Tracking", icon: MapPin, href: "/dashboard/tracking" },
+    { label: "Completed Donations", icon: CheckCircle2, href: "/dashboard/history" },
     { label: "Performance", icon: TrendingUp, href: "/dashboard/performance" },
     { label: "Notifications", icon: Bell, href: "/dashboard/notifications" },
+    { label: "Profile", icon: User, href: "/dashboard/profile" },
+    { label: "Help & Support", icon: CircleHelp, href: "/dashboard/profile#support" },
+    { label: "Settings", icon: SlidersHorizontal, href: "/dashboard/profile#settings" },
   ],
   business: [
     { label: "Dashboard", icon: Home, href: "/dashboard" },
@@ -70,11 +85,16 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Employees", icon: UserCheck, href: "/dashboard/employees" },
     { label: "Businesses", icon: Building2, href: "/dashboard/businesses" },
     { label: "Donations", icon: UtensilsCrossed, href: "/dashboard/donations" },
+    { label: "Live Operations", icon: Radio, href: "/dashboard#operations" },
+    { label: "Food Waste", icon: Leaf, href: "/dashboard/analytics" },
     { label: "Biogas Partners", icon: Leaf, href: "/dashboard/biogas-partners" },
     { label: "Subscriptions", icon: Briefcase, href: "/dashboard/subscriptions" },
     { label: "Analytics", icon: BarChart3, href: "/dashboard/analytics" },
+    { label: "Reports", icon: FileText, href: "/dashboard/analytics" },
     { label: "System Health", icon: Shield, href: "/dashboard/system-health" },
     { label: "Notifications", icon: Bell, href: "/dashboard/notifications" },
+    { label: "Issues & Complaints", icon: MessageSquareWarning, href: "/dashboard/notifications" },
+    { label: "Settings", icon: SlidersHorizontal, href: "/dashboard/profile#settings" },
   ],
   biogas: [
     { label: "Dashboard", icon: Home, href: "/dashboard" },
@@ -122,7 +142,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15">
           <Leaf className="h-5 w-5 text-white" />
         </div>
-        {!collapsed && <span className="text-lg font-extrabold text-white tracking-tight">FoodHub</span>}
+        {!collapsed && <span className="text-lg font-extrabold text-white tracking-tight">FoodFlow</span>}
       </div>
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {navByRole[role].map((item) => {
@@ -156,7 +176,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         )}
         <button onClick={handleSignOut} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-semibold text-white/60 hover:text-white hover:bg-white/8 transition-all">
           <LogOut className="h-5 w-5" />
-          {!collapsed && <span>Sign Out</span>}
+          {!collapsed && <span>Logout</span>}
         </button>
       </div>
     </div>
@@ -193,6 +213,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-[#00615F] text-white text-[10px] font-bold flex items-center justify-center">3</span>
             </Link>
             <span className={cn("rounded-full px-2.5 py-0.5 text-xs font-bold", roleColors[role])}>{roleLabels[role]}</span>
+            <Link to="/dashboard/profile" className="hidden items-center gap-2 border-l border-gray-100 pl-3 sm:flex">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#E8F5E9] text-sm font-bold text-[#00615F]">
+                {user?.name?.charAt(0) || "U"}
+              </div>
+              <div className="hidden text-left xl:block">
+                <p className="max-w-28 truncate text-xs font-bold text-gray-800">{user?.name || "Donor"}</p>
+                <p className="text-[10px] text-emerald-600">{user?.verificationStatus === "verified" ? "Verified account" : "Account active"}</p>
+              </div>
+            </Link>
           </div>
         </header>
         <main className="flex-1 overflow-y-auto p-4 lg:p-8">{children}</main>

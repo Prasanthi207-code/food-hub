@@ -63,10 +63,11 @@ export default function Dashboard() {
         <Routes>
           {/* ─── Role-based home dashboards ─── */}
           <Route index element={
-            role === "admin" ? <AdminDashboard /> :
-            role === "employee" ? <EmployeeDashboard /> :
-            role === "business" ? <BusinessDashboard /> :
-            role === "biogas" ? <BiogasDashboard /> :
+            role === "user" ? <Navigate to="/donor/dashboard" replace /> :
+            role === "employee" ? <Navigate to="/employee/dashboard" replace /> :
+            role === "business" ? <Navigate to="/business/dashboard" replace /> :
+            role === "admin" ? <Navigate to="/admin/dashboard" replace /> :
+            role === "biogas" ? <Navigate to="/partner/dashboard" replace /> :
             <UserDashboard />
           } />
 

@@ -16,7 +16,7 @@ export default function SystemHealth() {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
       <div>
         <h1 className="text-2xl font-extrabold text-gray-900 flex items-center gap-2"><Shield className="h-6 w-6 text-emerald-600" /> System Health</h1>
-        <p className="text-sm text-gray-500 mt-1">Real-time status of FoodHub's core infrastructure and services.</p>
+        <p className="text-sm text-gray-500 mt-1">Real-time status of FoodFlow's core infrastructure and services.</p>
       </div>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {healthItems.map((item) => (
@@ -43,7 +43,7 @@ export default function SystemHealth() {
         <CardContent className="p-6 text-center">
           <CheckCircle2 className="h-10 w-10 mx-auto text-emerald-200" />
           <p className="text-xl font-extrabold mt-2">All Systems Operational</p>
-          <p className="text-emerald-100 mt-1">FoodHub is running normally. All services are healthy.</p>
+          <p className="text-emerald-100 mt-1">FoodFlow is running normally. All services are healthy.</p>
         </CardContent>
       </Card>
     </motion.div>

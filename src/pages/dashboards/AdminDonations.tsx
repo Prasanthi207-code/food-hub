@@ -21,7 +21,7 @@ export default function AdminDonations() {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
       <div>
         <h1 className="text-2xl font-extrabold text-gray-900 flex items-center gap-2"><UtensilsCrossed className="h-6 w-6 text-emerald-600" /> Donation Management</h1>
-        <p className="text-sm text-gray-500 mt-1">Monitor all donation activity across the FoodHub platform.</p>
+        <p className="text-sm text-gray-500 mt-1">Monitor all donation activity across the FoodFlow platform.</p>
       </div>
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px] max-w-sm">

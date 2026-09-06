@@ -29,7 +29,7 @@ export default function BiogasSupplyRequests() {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
       <div>
         <h1 className="text-2xl font-extrabold text-gray-900 flex items-center gap-2"><Package className="h-6 w-6 text-purple-500" /> Supply Requests</h1>
-        <p className="text-sm text-gray-500 mt-1">Available food-waste supply requests from the FoodHub network.</p>
+        <p className="text-sm text-gray-500 mt-1">Available food-waste supply requests from the FoodFlow network.</p>
       </div>
       {filtered.length === 0 ? (
         <Card className="border-gray-200 shadow-sm"><CardContent><EmptyState icon={Package} title="No available supplies" description="New food-waste supply requests will appear here." /></CardContent></Card>

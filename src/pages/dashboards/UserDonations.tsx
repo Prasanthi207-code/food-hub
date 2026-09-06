@@ -30,13 +30,13 @@ export default function UserDonations() {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
       <div>
         <h1 className="text-2xl font-extrabold text-gray-900">My Donations</h1>
-        <p className="text-sm text-gray-500 mt-1">Track and manage all your food donations on FoodHub.</p>
+        <p className="text-sm text-gray-500 mt-1">Track and manage all your food donations on FoodFlow.</p>
       </div>
 
       <Card className="border-gray-200 shadow-sm">
         <CardContent className="p-0">
           {!donations || donations.length === 0 ? (
-            <EmptyState icon={UtensilsCrossed} title="No donations yet" description="Your donation history will appear here once you share food through FoodHub." />
+            <EmptyState icon={UtensilsCrossed} title="No donations yet" description="Your donation history will appear here once you share food through FoodFlow." />
           ) : (
             <div className="divide-y divide-gray-100">
               {donations.sort((a, b) => b.createdAt - a.createdAt).map((d) => (

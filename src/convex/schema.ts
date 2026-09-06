@@ -77,6 +77,8 @@ const schema = defineSchema(
       role: v.optional(roleValidator),
       phone: v.optional(v.string()),
       address: v.optional(v.string()),
+      verificationStatus: v.optional(v.union(v.literal("pending"), v.literal("verified"), v.literal("rejected"))),
+      verifiedAt: v.optional(v.number()),
       createdAt: v.optional(v.number()),
     }).index("email", ["email"]),
 
@@ -141,6 +143,7 @@ const schema = defineSchema(
       preparationDate: v.string(),
       expiryDate: v.string(),
       pickupAddress: v.string(),
+      pickupTimeWindow: v.optional(v.string()),
       contactPhone: v.string(),
       imageUrl: v.optional(v.string()),
       instructions: v.optional(v.string()),

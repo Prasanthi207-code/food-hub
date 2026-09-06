@@ -2,12 +2,25 @@ import { v } from "convex/values";
 import { mutation, query } from "../_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
-export const setRole = mutation({
-  args: { role: v.union(v.literal("admin"), v.literal("user"), v.literal("employee"), v.literal("business"), v.literal("biogas")) },
+export const completeRegistration = mutation({
+  args: {
+    name: v.string(),
+    phone: v.string(),
+    address: v.string(),
+    role: v.union(v.literal("user"), v.literal("employee"), v.literal("business"), v.literal("biogas")),
+  },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
-    await ctx.db.patch(userId, { role: args.role });
+    const currentUser = await ctx.db.get(userId);
+    if (currentUser?.role) throw new Error("Registration is already complete");
+    await ctx.db.patch(userId, {
+      name: args.name,
+      phone: args.phone,
+      address: args.address,
+      role: args.role,
+      verificationStatus: "pending",
+    });
     return { success: true };
   },
 });
@@ -51,5 +64,23 @@ export const getUserById = query({
   args: { userId: v.id("users") },
   handler: async (ctx, { userId }) => {
     return await ctx.db.get(userId);
+  },
+});
+
+export const setVerificationStatus = mutation({
+  args: {
+    userId: v.id("users"),
+    status: v.union(v.literal("verified"), v.literal("rejected")),
+  },
+  handler: async (ctx, args) => {
+    const adminId = await getAuthUserId(ctx);
+    if (!adminId) throw new Error("Not authenticated");
+    const admin = await ctx.db.get(adminId);
+    if (admin?.role !== "admin") throw new Error("Only admins can verify users");
+    await ctx.db.patch(args.userId, {
+      verificationStatus: args.status,
+      verifiedAt: args.status === "verified" ? Date.now() : undefined,
+    });
+    return { success: true };
   },
 });

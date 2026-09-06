@@ -88,6 +88,26 @@ const foodImages = {
   salad: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&h=400&fit=crop",
   grocery: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&h=400&fit=crop",
   cooking: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&h=400&fit=crop",
+  rescue: "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=600&h=400&fit=crop",
+  compost: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=600&h=400&fit=crop",
+  organic: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=600&h=400&fit=crop",
+  hero: "https://www.kindnesswelfare.com/_next/image?url=%2Fimages%2Fblog%2Ffood-donation-india-2026.png&w=1200&q=85",
+  route: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&h=400&fit=crop",
+  pantry: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&h=400&fit=crop",
+  mealShare: "https://images.unsplash.com/photo-1509099836639-18ba02c0f8a5?w=600&h=400&fit=crop",
+  donor: "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?w=600&h=400&fit=crop",
+  businessImpact: "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600&h=400&fit=crop",
+  agent: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&h=400&fit=crop",
+  stripRescue: "https://images.unsplash.com/photo-1594708767771-a7502209ff51?w=600&h=400&fit=crop",
+  stripCompost: "https://images.unsplash.com/photo-1589923188900-85dae523342b?w=600&h=400&fit=crop",
+  stripEnergy: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=600&h=400&fit=crop",
+  wasteProcessing: "https://img.freepik.com/premium-photo/modern-waste-processing-plant-with-automated-technology-sorting-recycling-plastic-showcasing-industrial-efficiency-sustainability_908344-31006.jpg",
+  beyondTable: "https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?w=600&h=400&fit=crop",
+  ctaOrganic: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=600&h=400&fit=crop",
+  networkAgent: "https://images.unsplash.com/photo-1526367790999-0150786686a2?w=600&h=400&fit=crop",
+  surplus: "https://images.financialexpressdigital.com/2025/12/Oliviya_9e0e6e_20250912154108_20251207121346.jpg?w=1200",
+  pickup: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&h=400&fit=crop",
+  communityMeal: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&h=400&fit=crop",
 };
 
 export default function Landing() {
@@ -107,7 +127,7 @@ export default function Landing() {
               <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#00615F]">
                 <Leaf className="h-5 w-5 text-white" />
               </div>
-              <span className="text-xl font-extrabold text-[#00615F] tracking-tight">FoodHub</span>
+              <span className="text-xl font-extrabold text-[#00615F] tracking-tight">FoodFlow</span>
             </Link>
             <div className="hidden md:flex items-center gap-8">
               <a href="#how-it-works" className="text-sm font-semibold text-gray-600 hover:text-[#00615F] transition-colors">How It Works</a>
@@ -140,10 +160,10 @@ export default function Landing() {
                 <Sprout className="h-4 w-4 text-[#00615F]" />
                 <span className="text-xs font-bold text-[#00615F] uppercase tracking-wider">Join the Food Waste Movement</span>
               </div>
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-gray-900 leading-[1.05] tracking-tight">
-                Save food,{' '}
-                <span className="text-[#00615F]">save money</span>,{' '}
-                save the planet.
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-[1.08] tracking-tight">
+                Share every meal,{' '}
+                <span className="text-[#00615F]">waste nothing</span>,{' '}
+                power tomorrow.
               </h1>
               <p className="mt-6 text-lg text-gray-500 leading-relaxed max-w-xl">
                 Connect with donors, businesses, and collection teams to rescue surplus food before it goes to waste. Every meal saved is a step toward a better world.
@@ -174,8 +194,8 @@ export default function Landing() {
             >
               <div className="relative">
                 <img
-                  src={foodImages.salad}
-                  alt="Fresh food ready for donation"
+                  src={foodImages.hero}
+                  alt="Volunteers preparing rescued food for their community"
                   className="rounded-[2rem] w-full h-[420px] object-cover shadow-2xl"
                 />
                 <motion.div
@@ -235,17 +255,23 @@ export default function Landing() {
       <section className="py-6 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-4 gap-3 rounded-3xl overflow-hidden">
-            {[foodImages.bread, foodImages.vegetables, foodImages.cooking, foodImages.grocery].map((img, i) => (
+            {[
+              { img: foodImages.stripRescue, label: "Rescue surplus food" },
+              { img: foodImages.vegetables, label: "Share fresh produce" },
+              { img: foodImages.stripCompost, label: "Compost food waste" },
+              { img: foodImages.stripEnergy, label: "Create clean energy" },
+            ].map((item, i) => (
               <motion.div
-                key={i}
+                key={item.label}
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
                 className="relative h-32 sm:h-44 rounded-2xl overflow-hidden"
               >
-                <img src={img} alt="" className="w-full h-full object-cover" />
+                <img src={item.img} alt={item.label} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                <span className="absolute bottom-3 left-3 right-3 text-sm font-bold text-white drop-shadow-md">{item.label}</span>
               </motion.div>
             ))}
           </div>
@@ -257,7 +283,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection className="text-center mb-16">
             <p className="text-sm font-bold text-[#00615F] tracking-widest uppercase">Simple & Effective</p>
-            <h2 className="mt-3 text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">How FoodHub works</h2>
+            <h2 className="mt-3 text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">How FoodFlow works</h2>
             <p className="mt-4 text-gray-500 max-w-2xl mx-auto text-lg">
               From surplus to service — a streamlined workflow that gets food where it matters most.
             </p>
@@ -267,19 +293,19 @@ export default function Landing() {
             {[
               {
                 step: "01",
-                img: foodImages.restaurant,
+                img: foodImages.surplus,
                 title: "List surplus food",
                 desc: "Donors and businesses list their surplus with details — category, quantity, freshness, and pickup location.",
               },
               {
                 step: "02",
-                img: foodImages.delivery,
+                img: foodImages.pickup,
                 title: "Pick up & deliver",
                 desc: "Collection agents accept nearby requests and transport food to shelters, kitchens, and community centres.",
               },
               {
                 step: "03",
-                img: foodImages.community,
+                img: foodImages.communityMeal,
                 title: "Feed communities",
                 desc: "Food reaches people in need. Analytics track meals served, waste diverted, and environmental impact.",
               },
@@ -322,7 +348,7 @@ export default function Landing() {
               </h2>
               <p className="mt-6 text-emerald-100 leading-relaxed text-lg">
                 Nearly one-third of all food produced globally goes to waste while millions go hungry.
-                FoodHub was built to close that gap — creating a transparent, efficient marketplace where
+                FoodFlow was built to close that gap — creating a transparent, efficient marketplace where
                 surplus food moves from businesses and individuals to the people who need it most.
               </p>
               <div className="mt-8 grid grid-cols-2 gap-4">
@@ -385,23 +411,23 @@ export default function Landing() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: Heart, title: "Food Donors", desc: "Individuals sharing surplus home-cooked food or groceries.", img: foodImages.cooking },
+              { icon: Heart, title: "Food Donors", desc: "Individuals sharing surplus home-cooked food or groceries.", img: foodImages.rescue },
               { icon: Building2, title: "Businesses", desc: "Restaurants, hotels, and caterers managing end-of-day surplus.", img: foodImages.restaurant },
-              { icon: Truck, title: "Collection Agents", desc: "Trained employees who pick up and deliver donated food.", img: foodImages.delivery },
-              { icon: Recycle, title: "Waste-Processing Partners", desc: "Biogas plants and composters handling food unsuitable for eating.", img: foodImages.grocery },
+              { icon: Truck, title: "Collection Agents", desc: "Trained employees who pick up and deliver donated food.", img: foodImages.networkAgent },
+              { icon: Recycle, title: "Waste-Processing Partners", desc: "Biogas plants and composters handling food unsuitable for eating.", img: foodImages.wasteProcessing },
             ].map((item, i) => (
               <AnimatedSection key={item.title}>
                 <div className="group rounded-3xl bg-white border border-gray-100 overflow-hidden hover:shadow-xl hover:shadow-[#00615F]/5 transition-all duration-500">
+                  <div className="p-5">
+                    <h3 className="text-lg font-extrabold text-gray-900">{item.title}</h3>
+                    <p className="mt-1 text-sm text-gray-500 leading-relaxed">{item.desc}</p>
+                  </div>
                   <div className="relative h-40 overflow-hidden">
                     <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                     <div className="absolute bottom-3 left-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 backdrop-blur-sm">
                       <item.icon className="h-5 w-5 text-[#00615F]" />
                     </div>
-                  </div>
-                  <div className="p-5">
-                    <h3 className="text-lg font-extrabold text-gray-900">{item.title}</h3>
-                    <p className="mt-1 text-sm text-gray-500 leading-relaxed">{item.desc}</p>
                   </div>
                 </div>
               </AnimatedSection>
@@ -416,7 +442,7 @@ export default function Landing() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <AnimatedSection className="order-2 lg:order-1">
               <div className="rounded-3xl overflow-hidden shadow-2xl">
-                <img src={foodImages.restaurant} alt="Restaurant partner" className="w-full h-80 object-cover" />
+                <img src={foodImages.pantry} alt="Food pantry partner organizing rescued groceries" className="w-full h-80 object-cover" />
               </div>
             </AnimatedSection>
 
@@ -426,7 +452,7 @@ export default function Landing() {
                 Turn surplus into social impact
               </h2>
               <p className="mt-6 text-gray-500 leading-relaxed text-lg">
-                Hotels, restaurants, and food businesses can subscribe to FoodHub to donate surplus food
+                Hotels, restaurants, and food businesses can subscribe to FoodFlow to donate surplus food
                 efficiently, track their environmental impact, and build a verified reputation for sustainability.
               </p>
               <ul className="mt-8 space-y-4">
@@ -465,7 +491,7 @@ export default function Landing() {
               </h2>
               <p className="mt-6 text-gray-500 leading-relaxed text-lg">
                 Not every surplus item can be donated as food — and that's where our waste-processing
-                partnerships come in. FoodHub classifies inedible food waste and connects it to verified
+                partnerships come in. FoodFlow classifies inedible food waste and connects it to verified
                 biogas and composting partners, creating closed-loop sustainability.
               </p>
               <p className="mt-4 text-gray-500 leading-relaxed text-lg">
@@ -485,8 +511,8 @@ export default function Landing() {
             <AnimatedSection>
               <div className="relative">
                 <img
-                  src={foodImages.vegetables}
-                  alt="Food waste processing"
+                  src={foodImages.beyondTable}
+                  alt="Industrial food waste processing facility"
                   className="rounded-3xl w-full h-80 object-cover shadow-2xl"
                 />
                 <div className="absolute -bottom-6 -right-6 bg-white rounded-2xl p-5 shadow-xl border border-gray-100">
@@ -516,9 +542,9 @@ export default function Landing() {
 
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { name: "Sarah Johnson", role: "Food Donor", text: "FoodHub made it so easy to share my surplus food. Knowing it reaches people who need it is incredibly rewarding.", img: foodImages.cooking },
-              { name: "Grand Hotel", role: "Business Partner", text: "We've reduced our food waste by 40% since joining FoodHub. The impact score helps us track our sustainability goals.", img: foodImages.restaurant },
-              { name: "David Kim", role: "Collection Agent", text: "The tracking system makes my routes efficient and I love seeing the real impact of each delivery I make.", img: foodImages.delivery },
+              { name: "Sarah Johnson", role: "Food Donor", text: "Every container I donate becomes a meal instead of waste. FoodFlow makes sharing surplus simple and trustworthy.", img: foodImages.donor },
+              { name: "Grand Hotel", role: "Business Partner", text: "FoodFlow turns our end-of-day surplus into measurable community impact and keeps good food out of landfills.", img: foodImages.businessImpact },
+              { name: "David Kim", role: "Collection Agent", text: "I can see where every pickup goes. Better routes mean more meals delivered and less wasted travel.", img: foodImages.agent },
             ].map((t, i) => (
               <AnimatedSection key={t.name}>
                 <div className="rounded-3xl bg-white border border-gray-100 p-6 hover:shadow-lg transition-shadow duration-300">
@@ -545,7 +571,7 @@ export default function Landing() {
       {/* ─── Call to Action ───────────────────────────────────────── */}
       <section className="py-24 bg-[#00615F] relative overflow-hidden">
         <div className="absolute inset-0 opacity-5">
-          <img src={foodImages.salad} alt="" className="w-full h-full object-cover" />
+          <img src={foodImages.ctaOrganic} alt="Organic plants growing from sustainable food systems" className="w-full h-full object-cover" />
         </div>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <AnimatedSection>
@@ -553,7 +579,7 @@ export default function Landing() {
               Ready to make a difference?
             </h2>
             <p className="mt-6 text-emerald-100 text-lg max-w-2xl mx-auto">
-              Join thousands of donors, businesses, and partners who are already using FoodHub
+              Join thousands of donors, businesses, and partners who are already using FoodFlow
               to reduce waste, feed communities, and build a more sustainable food system.
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-4">
@@ -584,7 +610,7 @@ export default function Landing() {
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#00615F]">
                   <Leaf className="h-4.5 w-4.5 text-white" />
                 </div>
-                <span className="text-lg font-extrabold text-white">FoodHub</span>
+                <span className="text-lg font-extrabold text-white">FoodFlow</span>
               </div>
               <p className="text-sm leading-relaxed">
                 Connecting donors, businesses, and partners to reduce food waste and serve communities in need.
@@ -620,7 +646,7 @@ export default function Landing() {
             </div>
           </div>
           <div className="mt-12 pt-8 border-t border-gray-800 text-center text-xs text-gray-500">
-            © {new Date().getFullYear()} FoodHub. All rights reserved. Built for a more sustainable future.
+            © {new Date().getFullYear()} FoodFlow. All rights reserved. Built for a more sustainable future.
           </div>
         </div>
       </footer>

@@ -42,7 +42,7 @@ export default function BiogasAgreements() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-extrabold text-gray-900 flex items-center gap-2"><FileText className="h-6 w-6 text-purple-500" /> Supply Agreements</h1>
-          <p className="text-sm text-gray-500 mt-1">Create and manage food-waste supply agreements with FoodHub.</p>
+          <p className="text-sm text-gray-500 mt-1">Create and manage food-waste supply agreements with FoodFlow.</p>
         </div>
         <Button onClick={() => setShowForm(!showForm)} className="bg-purple-600 hover:bg-purple-700 text-white"><Plus className="h-4 w-4 mr-1" /> New Agreement</Button>
       </div>
@@ -68,7 +68,7 @@ export default function BiogasAgreements() {
       )}
 
       {!agreements || agreements.length === 0 ? (
-        <Card className="border-gray-200 shadow-sm"><CardContent><EmptyState icon={FileText} title="No agreements yet" description="Create your first supply agreement to start receiving food waste from FoodHub." /></CardContent></Card>
+        <Card className="border-gray-200 shadow-sm"><CardContent><EmptyState icon={FileText} title="No agreements yet" description="Create your first supply agreement to start receiving food waste from FoodFlow." /></CardContent></Card>
       ) : (
         <div className="space-y-4">
           {agreements.map((a) => (
